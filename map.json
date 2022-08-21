@@ -1,0 +1,404 @@
+{
+    "1": {
+        "name": "Mario Bros. House",
+        "description": "A simple, two-room house containing merely a dining area and bedroom. You meet the Mario Brothers here, but they are essentially meaningless in this game. You are the protagonist. This is the starting point of your adventure. Once you leave, there's no coming back.",
+        "connections": [ 2 ],
+        "locked": 0
+    },
+    "2": {
+        "name": "Mario's Yard",
+        "description": "The Mario Brothers' yard contains a pipe which acts as a gateway to the rest of the land.",
+        "connections": [ 1 , 3 ],
+        "locked": 0
+    },
+    "3": {
+        "name": "Rogueport Pipe",
+        "description": "A pipe connecting Mario's yard to Rogueport",
+        "connections": [ 2, 4 ],
+        "locked": 0
+    },
+    "4": {
+        "name": "Rogueport Dock",
+        "description": "This run-down port is home to a single dock and a staircase leading to the center of Rogueport. Worker toads and bob-ombs roam the area, waiting for ships to arrive.",
+        "connections": [ 5 ],
+        "locked": 0
+    },
+    "5": {
+        "name": "Rogueport Plaza",
+        "description": "The heart of Rogueport. It contains a gallows in the center and is home to several shops, an inn, and Zess T.'s home. Shady characters roam the plaza looking for trouble.",
+        "connections": [ 4, 6, 7, 10, 11, 16 ],
+        "locked": 0
+    },
+    "6": {
+        "name": "Toad Bros. Bazaar",
+        "description": "A small item shop run by toad brothers Thriff T. and Plenn T.",
+        "connections": [ 5 ],
+        "locked": 0
+    },
+    "7": {
+        "name": "Podley's Place",
+        "description": "A classy bar in Rogueport Plaza that serves up Chuckola Cola. Upstairs, there is an inn and a badge shop.",
+        "connections": [ 5, 8 ],
+        "locked": 0
+    },
+    "8": {
+        "name": "Rogueport Inn",
+        "description": "A quaint inn with two beds and a leaky roof. You can heal your HP here by PVPing the Innkeeper. Toadsworth hangs out here for the duration of your adventure.",
+        "connections": [ 7, 9 ],
+        "locked": 0
+    },
+    "9": {
+        "name": "Lovely Howz of Badges",
+        "description": "A badge shop run by the mischevious Ms. Mowz and an assistant.",
+        "connections": [ 5, 8 ],
+        "locked": 0
+    },
+    "10": {
+        "name": "Zess T.'s House",
+        "description": "The home of Zess T., a world-renowned chef known for her delicious meals and her misplacing of contact lenses. Her house is literally just a kitchen.",
+        "connections": [ 5 ],
+        "locked": 0
+    },
+    "11": {
+        "name": "East Rogueport",
+        "description": "The east side of Rogueport is controlled by the Robbo Thieves. Bandits roam the streets, the houses are run-down, and trash is strewn throughout the area. Home to the houses of Merlon, Professor Frankly, and Bobbery.",
+        "connections": [ 5, 12, 13, 14, 15, 26 ],
+        "locked": 0
+    },
+    "12": {
+        "name": "Hidden Alley",
+        "description": "A hard-to-spot, suspect alleyway where Darkly, a Twilight Town native, resides.",
+        "connections": [ 11 ],
+        "locked": 0
+    },
+    "13": {
+        "name": "Merlon's House",
+        "description": "A one-room house containing Merlon, a wizard who is capable of increasing your stats. PVP him to increase your stats.",
+        "connections": [ 11 ],
+        "locked": 0
+    },
+    "14": {
+        "name": "Frankly's House",
+        "description": "The home of U Goom's Professor Frankly, an elderly goomba who aids in Mario's adventure. Books and papers are scattered among the house.",
+        "connections": [ 11 ],
+        "locked": 0
+    },
+    "15": {
+        "name": "Bobbery's House",
+        "description": "Admiral Bobbery's residence. The door is locked from the inside.",
+        "connections": [ 11 ],
+        "locked": 1
+    },
+    "16": {
+        "name": "West Rogueport",
+        "description": "The west side of Rogueport is controlled by the mafia of Don Pianta. It is much cleaner than the east side, and contains a fountain and a small park. Accessible from here is the Pianta Parlor, Westside Goods, a train station / airport, and the West Rogueport Sewers which can be reached via a grate.",
+        "connections": [ 5, 17, 18, 19, 20 ],
+        "locked": 0
+    },
+    "17": {
+        "name": "Pianta Parlor",
+        "description": "A casino located in West Rogueport where Mario can play minigames to earn tokens. There are two slot machines and a counter for redeeming prizes.",
+        "connections": [ 16 ],
+        "locked": 0
+    },
+    "18": {
+        "name": "Westside Goods",
+        "description": "An item shop in west Rogueport that appears normal, but actually serves as the gateway to Don Pianta's hideout.",
+        "connections": [ 16 ],
+        "locked": 0
+    },
+    "19": {
+        "name": "Station",
+        "description": "A train station and airport located north of west Rogueport that provides access to Poshley Heights via train and to Glitzville via blimp.",
+        "connections": [ 16, 59, 64 ],
+        "locked": 0
+    },
+    "20": {
+        "name": "West Sewers",
+        "description": "The west side of the Rogueport Sewers. The routes to Twilight Town and Phendrana Drifts are located here, along with enemy Spinias and Spiky Goombas.",
+        "connections": [ 21, 22, 23 ],
+        "locked": 0
+    },
+    "21": {
+        "name": "T. Town Entrance",
+        "description": "A small room containing the pipe to Twilight Town.",
+        "connections": [ 20, 33 ],
+        "locked": 0
+    },
+    "22": {
+        "name": "P. Drifts Transport",
+        "description": "A fairly small room that contains an elevator leading to Phendrana Drifts.",
+        "connections": [ 20, 28 ],
+        "locked": 0
+    },
+    "23": {
+        "name": "Ancient Town",
+        "description": "The ruins of what used to be a town. There is a time-worn fountain, a shop, Merluvlee's house, Dazzle the star piece trader, and rubble all around.",
+        "connections": [ 20, 24, 25, 27 ],
+        "locked": 0
+    },
+    "24": {
+        "name": "Deepdown Depot",
+        "description": "An old, structurally dubious shop run by a friendly orange toad. Unlike other shops, it offers gold bars for purchase.",
+        "connections": [ 23 ],
+        "locked": 0
+    },
+    "25": {
+        "name": "Merluvlee's House",
+        "description": "A house similar to Merlon's. Mario comes here to receive advice about how to complete his adventure and where to find treasure.",
+        "connections": [ 23 ],
+        "locked": 0
+    },
+    "26": {
+        "name": "East Sewers Pipe",
+        "description": "A pipe connecting east Rogueport with the sewers.",
+        "connections": [ 11, 27 ],
+        "locked": 0
+    },
+    "27": {
+        "name": "East Sewers",
+        "description": "The east side of the Rogueport sewers. There is not much here but connections to other parts of the sewer and a few roaming enemies.",
+        "connections": [ 23, 26, 43, 51 ],
+        "locked": 0
+    },
+    "28": {
+        "name": "Phendrana Shorelines",
+        "description": "The first major room Samus visits in Phendrana Drifts.  It contains many tall rock pillars, an icy lake that is very shallow in places, the ruins of a building high on a ledge, and multiple platforms to reach higher areas.",
+        "connections": [ 22, 29 ],
+        "locked": 0
+    },
+    "29": {
+        "name": "Temple Entryway",
+        "description": "A passage with snow-covered rock lining the walls. Pulse Bombus are found at either end, and a Scatter Bombu is in between them.",
+        "connections": [ 28, 30 ],
+        "locked": 0
+    },
+    "30": {
+        "name": "Chozo Ice Temple",
+        "description": "An abandoned Chozo building with a large Chozo statue along with four Chozo busts on the wall. Each of the four busts depict a different Chozo: a philosopher, a warrior, an architect, and a shaman.",
+        "connections": [ 29, 31 ],
+        "locked": 0
+    },
+    "31": {
+        "name": "Chapel Tunnel",
+        "description": "A tunnel connecting the Chozo Ice Temple to the Chapel of Elders. It has fractured stone walls and a morph ball tunnel which provides access to the other side of the room.",
+        "connections": [ 30, 32 ],
+        "locked": 0
+    },
+    "32": {
+        "name": "Chapel of the Elders",
+        "description": "Home to one of Phendrana Drifts' bosses: the Sheegoth. Samus' wave beam is collected after Sheegoth is defeated.",
+        "connections": [ 31 ],
+        "locked": 0
+    },
+    "33": {
+        "name": "T. Town Pipe",
+        "description": "The pipe connecting Rogueport to Twilight Town.",
+        "connections": [ 21, 34 ],
+        "locked": 0
+    },
+    "34": {
+        "name": "Twilight Town",
+        "description": "A perpetually twilit town with dead, bare trees and gloomy houses. The villages, Twilighters, are gradually being turned into pigs. Every time the bell at Creepy Steeple tolls, another Twilighter is pig-ified...",
+        "connections": [ 33, 35, 36, 37 ],
+        "locked": 0
+    },
+    "35": {
+        "name": "Mayor's House",
+        "description": "A small house containing a dining table covered with food and not much else. Where does the man sleep??",
+        "connections": [ 34 ],
+        "locked": 0
+    },
+    "36": {
+        "name": "Twilight Shop",
+        "description": "The Twilight Town shop. It is normally run by a Twilighter couple, but it is currently closed, as the husband has been turned into a pig.",
+        "connections": [ 34 ],
+        "locked": 1
+    },
+    "37": {
+        "name": "Twilight Trail",
+        "description": "The path exiting Twilight Town that leads to Creepy Steeple. Bare trees are scattered along the path, and multiple types of enemies roam free.",
+        "connections": [ 34, 38 ],
+        "locked": 0
+    },
+    "38": {
+        "name": "Twilight Woods",
+        "description": "A dark, purple-floored forest full of flower-like enemies. It is the final obstacle on the way to Creepy Steeple.",
+        "connections": [ 37, 39 ],
+        "locked": 0
+    },
+    "39": {
+        "name": "C. Steeple Courtyard",
+        "description": "The entrance to Creepy Steeple. There is time-worn brick wall surrounding the area along with a well that you definitely cannot enter.",
+        "connections": [ 38, 40 ],
+        "locked": 0
+    },
+    "40": {
+        "name": "Creepy Steeple Foyer",
+        "description": "A large, open room with hundreds of boos floating about. Moonlight drapes the walls and a deafening silence falls upon all who enter.",
+        "connections": [ 39, 41, 42 ],
+        "locked": 0
+    },
+    "41": {
+        "name": "Backyard",
+        "description": "A narrow pathway behind the Creepy Steeple that Swoopers love.",
+        "connections": [ 40 ],
+        "locked": 0
+    },
+    "42": {
+        "name": "Steeple",
+        "description": "A room at the top of Creepy Steeple with a comfy chair and television in which Doopliss resides. Mario comes here to defeat Doopliss and end the pig-ification of the Twilighters.",
+        "connections": [ 40 ],
+        "locked": 0
+    },
+    "43": {
+        "name": "T. Bog Transport",
+        "description": "A small, round room with an elevator to the Torvus Bog. It has few significant features.",
+        "connections": [ 27, 44 ],
+        "locked": 0
+    },
+    "44": {
+        "name": "T. Chamber Access",
+        "description": "A hallway with several rotating platforms, which are part of an automatic water purification system.",
+        "connections": [ 43, 45 ],
+        "locked": 0
+    },
+    "45": {
+        "name": "Training Chamber",
+        "description": "A large, water-filled room in which two Bloggs \"lurk.\" It it one of three rooms that form a ring around the central Hydrodynamo Station.",
+        "connections": [ 44, 46, 47, 48 ],
+        "locked": 0
+    },
+    "46": {
+        "name": "Gathering Hall",
+        "description": "Another water-filled room around the Hydrodynamo station. It features two concealed movement pads that Samus must shoot with the Dark Beam to activate.",
+        "connections": [ 45, 47, 48 ],
+        "locked": 0
+    },
+    "47": {
+        "name": "Catacombs",
+        "description": "Similar to rooms near it, the Catacombs is half-submerged. It contains several Torvus Bearerpods which hold items helpful to Samus. The body of G-Sch, one of the Luminoth Keybearers, lies here.",
+        "connections": [ 45, 46, 48 ],
+        "locked": 0
+    },
+    "48": {
+        "name": "Hydrodynamo Station",
+        "description": "A large, cylindrical room that features four platforms that rotate around the central pillar. Locks in the room prevent Samus from entering the Hydrodynamo Shaft, but she unlocked them all for you, so you can reach the shaft with no problems. Make sure to send her a thank you note.",
+        "connections": [ 45, 46, 47, 49 ],
+        "locked": 0
+    },
+    "49": {
+        "name": "Hydrodynamo Shaft",
+        "description": "A small, round, water-filled room that features many flights of stairs. Through grating the Alpha Blogg is visible.",
+        "connections": [ 48, 50 ],
+        "locked": 0
+    },
+    "50": {
+        "name": "Main Hydrochamber",
+        "description": "A circular, water-filled room with what used to be a pillar in the center. Alpha Blogg destroyed it when entering the room to fight Samus.",
+        "connections": [ 49 ],
+        "locked": 0
+    },
+    "51": {
+        "name": "Sewers Sublevel 3",
+        "description": "A room below the East Sewers that connects to the room housing the Thousand Year Door. The route to Boggly Woods and the Great Tree is also found here. It contains a few enemies and an underground stream.",
+        "connections": [ 27, 52, 53 ],
+        "locked": 0
+    },
+    "52": {
+        "name": "TTYD Room",
+        "description": "The room containing the main plot point of the game: the Thousand Year Door. The room itself is large and open with a high ceiling. In the center, there is a circular structure that Mario stands in the center of to open the Door.",
+        "connections": [ 51 ],
+        "locked": 0
+    },
+    "53": {
+        "name": "Boggly Woods Access",
+        "description": "The room Mario follows Punio into. It contains a secret pipe to Boggly Woods.",
+        "connections": [ 51, 54 ],
+        "locked": 0
+    },
+    "54": {
+        "name": "Boggly Woods",
+        "description": "A black-and-white forest in which the Great Tree and Flurrie's house reside. The forest floor is rainbow-colored, and an eerie, lonely atmosphere exists about the place.",
+        "connections": [ 53, 55, 57 ],
+        "locked": 0
+    },
+    "55": {
+        "name": "East Boggly Woods",
+        "description": "The Eastern side of the Boggly Woods. Flurrie's house is accessible from here.",
+        "connections": [ 54, 56 ],
+        "locked": 0
+    },
+    "56": {
+        "name": "Flurrie's House",
+        "description": "The house of Madame Flurrie, a retired actress. It has purple and black checkered flooring, a large living room, and expensive china all around.",
+        "connections": [ 55 ],
+        "locked": 0
+    },
+    "57": {
+        "name": "Great Tree",
+        "description": "A massive tree, home to the Puni tribe (small, 4-legged creatures that resemble insects). There is a sealed metal door blocking the entrance to the Tree, installed by the X-Nauts.",
+        "connections": [ 54, 58 ],
+        "locked": 0
+    },
+    "58": {
+        "name": "Great Tree Foyer",
+        "description": "The first room seen upon entering the Great Tree. There are 3 black-and-white statues, with the middle one resembling a Puni. Roots and small waterfalls line the walls, and a yellow plant pattern covers the floor.",
+        "connections": [ 57 ],
+        "locked": 1
+    },
+    "59": {
+        "name": "Excess Express",
+        "description": "A luxury train which provides direct service to Poshley Heights.",
+        "connections": [ 19, 60 ],
+        "locked": 0
+    },
+    "60": {
+        "name": "Poshley Heights",
+        "description": "An opulent town home to many wealthy celebrities. Extravagant homes and buildings line the street.",
+        "connections": [ 59, 61, 62 ],
+        "locked": 0
+    },
+    "61": {
+        "name": "Goldbob's House",
+        "description": "An upscale home with a pool in the side yard.",
+        "connections": [ 60 ],
+        "locked": 0
+    },
+    "62": {
+        "name": "Poshley Sanctum",
+        "description": "A former temple turned Pennington's home. It has tremendously high ceilings and lavish painted glass windows. A fake crystal star is on display, which the Shadow Sirens and Doopliss steal.",
+        "connections": [ 60, 63 ],
+        "locked": 0
+    },
+    "63": {
+        "name": "Secret Room",
+        "description": "A hidden room in the back of Poshley Sanctum. It is much like the first room, but with many dark boos roaming around as well as a real crystal star.",
+        "connections": [ 62 ],
+        "locked": 0
+    },
+    "64": {
+        "name": "Blimp",
+        "description": "A cheep cheep-inspired blimp that serves to transport people to and from Glitzville.",
+        "connections": [ 19, 65 ],
+        "locked": 0
+    },
+    "65": {
+        "name": "Glitzville Square",
+        "description": "The main square of Glitzville, a floating island resort known for the Glitz Pit, an arena where combatants register and fight against each other to obtain rank #1. The square contains a hotdog stand, a drink shop, and various tourists.",
+        "connections": [ 64, 66, 67 ],
+        "locked": 0
+    },
+    "66": {
+        "name": "Fresh Juice Shop",
+        "description": "A juice shop run by Podler. Mario comes here to receive the super hammer from him.",
+        "connections": [ 65 ],
+        "locked": 0
+    },
+    "67": {
+        "name": "Glitz Pit",
+        "description": "A large arena where fights take place. The current reigning champ is none other than Mario.",
+        "connections": [ 65 ],
+        "locked": 0
+    }
+}

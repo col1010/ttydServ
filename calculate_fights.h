@@ -1,0 +1,1 @@
+void initiate_fight(character* player, map<uint16_t, vector<character*>>* room_characters_map, map<uint16_t, vector<character*>>* room_enemies_map);

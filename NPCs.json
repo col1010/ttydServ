@@ -1,0 +1,1032 @@
+{
+    "Mario": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 500,
+        "health": 200,
+        "gold": 5000,
+        "room_num": 1,
+        "description": "Luigi's red counterpart."
+    },
+    "Luigi": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 500,
+        "health": 200,
+        "gold": 50000,
+        "room_num": 1,
+        "description": "Mario's green counterpart."
+    },
+    "Goombella": {
+        "monster": 0,
+        "attack": 50,
+        "defense": 30,
+        "regen": 100,
+        "health": 50,
+        "gold": 100,
+        "room_num": 4,
+        "description": "A very smart and sassy goomba currently studying archaeology at the University of Goom. She has a large, blonde ponytail and wears a helmet with a light and a matching shirt with a red scarf."
+    },
+    "Worker Toad": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 500,
+        "health": 100,
+        "gold": 50,
+        "room_num": 4,
+        "description": "A hard worker, but sadly does not make a liveable wage."
+    },
+    "Worker Bob-omb": {
+        "monster": 0,
+        "attack": 600,
+        "defense": 0,
+        "regen": 0,
+        "health": 100,
+        "gold": 25,
+        "room_num": 4,
+        "description": "A volatile sailor who could explode at any minute. Also does not make a liveable wage."
+    },
+    "Shady Goomba 1": {
+        "monster": 0,
+        "attack": 100,
+        "defense": 50,
+        "regen": 50,
+        "health": 200,
+        "gold": 100,
+        "room_num": 5,
+        "description": "One of many shady looking goombas roaming Rogueport."
+    },
+    "Shady Goomba 2": {
+        "monster": 0,
+        "attack": 100,
+        "defense": 50,
+        "regen": 50,
+        "health": 200,
+        "gold": 100,
+        "room_num": 5,
+        "description": "One of many shady looking goombas roaming Rogueport."
+    },
+    "Charlieton": {
+        "monster": 0,
+        "attack": 100,
+        "defense": 50,
+        "regen": 50,
+        "health": 150,
+        "gold": 100,
+        "room_num": 5,
+        "description": "A traveling salesman known for ripping people off. He sells a wide variety of badges and items that may or may not be useful."
+    },
+    "Thriff T.": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 200,
+        "health": 75,
+        "gold": 10000,
+        "room_num": 6,
+        "description": "A green toad merchant with an appropriate name. He is the younger brother of Plenn T. and aspires to open his own shop one day."
+    },
+    "Plenn T.": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 200,
+        "health": 75,
+        "gold": 50000,
+        "room_num": 6,
+        "description": "A green toad merchant. He is Thriff T.'s older brother and owns the Toad Bros. Bazaar."
+    },
+    "Podley": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 200,
+        "health": 50,
+        "gold": 25000,
+        "room_num": 7,
+        "description": "A green, balding fellow who owns Podley's Place. Having lived in Rogueport for a long time, he knows much about the townsfolk."
+    },
+    "Flavio": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 50,
+        "health": 100,
+        "gold": 65000,
+        "room_num": 7,
+        "description": "A \"famous\", narcissistic entrepreneur who pines for riches and treasure, but is too much of a coward to hunt for them. He will not shut up about the Skull Gem on the table next to him."
+    },
+    "Innkeeper": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 50,
+        "health": 100,
+        "gold": 10000,
+        "room_num": 8,
+        "description": "A kind toad who runs the Rogueport Inn. Send a PVP message with her as the target to heal yourself to full at a cost."
+    },
+    "Toadsworth": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 0,
+        "health": 100,
+        "gold": 60000,
+        "room_num": 8,
+        "description": "An elderly toad and Princess Peach's longtime steward. He is resting at the inn while Mario does all the hard work."
+    },
+    "Ms. Mowz": {
+        "monster": 0,
+        "attack": 200,
+        "defense": 100,
+        "regen": 250,
+        "health": 150,
+        "gold": 40000,
+        "room_num": 9,
+        "description": "A white and red mouse with a knack for stealing badges. Mischevious and sultry, she often flirts with Mario."
+    },
+    "Zess T.": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 100,
+        "health": 100,
+        "gold": 25000,
+        "room_num": 10,
+        "description": "A grumpy yellow toad chef who can serve up an outstanding meal but forces others to buy her new contacts when she loses them."
+    },
+    "Bandit 1": {
+        "monster": 1,
+        "attack": 50,
+        "defense": 50,
+        "regen": 75,
+        "health": 500,
+        "gold": 1000,
+        "room_num": 11,
+        "description": "One of many bandit shy-guys that roam the east side of Rogueport in search of victims"
+    },
+    "Bandit 2": {
+        "monster": 1,
+        "attack": 50,
+        "defense": 50,
+        "regen": 75,
+        "health": 500,
+        "gold": 1000,
+        "room_num": 11,
+        "description": "One of many bandit shy-guys that roam the east side of Rogueport in search of victims"
+    },
+    "Darkly": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 100,
+        "health": 100,
+        "gold": 100,
+        "room_num": 12,
+        "description": "A Twilight Town native, he helps Mario get there during his adventure. He likes dark places."
+    },
+    "Merlon": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 100,
+        "health": 300,
+        "gold": 15000,
+        "room_num": 13,
+        "description": "A wizard whose abilities include increasing one's stats. Send a PVP message with him as the target to spend 100 gold and increase your stats."
+    },
+    "Frankly": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 100,
+        "health": 50,
+        "gold": 10000,
+        "room_num": 14,
+        "description": "A professor at the University of Goom. He is one of Goombella's professors and helps Mario by determining where to go and how to get there throughout his adventure."
+    },
+    "Bobbery": {
+        "monster": 0,
+        "attack": 100,
+        "defense": 200,
+        "regen": 100,
+        "health": 300,
+        "gold": 3000,
+        "room_num": 15,
+        "description": "A retired sailor bob-omb with a sad backstory."
+    },
+    "Lucky": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 100,
+        "health": 300,
+        "gold": 40000,
+        "room_num": 16,
+        "description": "A large bob-omb who runs the lottery. Do not change the clock or he will be very angry."
+    },
+    "Goomez": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 100,
+        "health": 50,
+        "gold": 400,
+        "room_num": 16,
+        "description": "A goomba who chills in the park in West Rogueport."
+    },
+    "Lahla": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 100,
+        "health": 300,
+        "gold": 5000,
+        "room_num": 17,
+        "description": "A boo who works at the Pianta Parlor redemption counter. She is Peeka's sister."
+    },
+    "Peeka": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 100,
+        "health": 300,
+        "gold": 5000,
+        "room_num": 18,
+        "description": "A boo who works at Westside goods. She is Lahla's sister."
+    },
+    "Stewart": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 100,
+        "health": 50,
+        "gold": 3000,
+        "room_num": 19,
+        "description": "A cheep cheep in charge of checking passengers' tickets and allowing them onto the Cheep Blimp to Glitzville."
+    },
+    "Porter": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 50,
+        "health": 100,
+        "gold": 10000,
+        "room_num": 19,
+        "description": "A blue-and-black toad in charge of checking passengers' tickets and allowing them onto the Excess Express to Poshley Heights."
+    },
+    "Spinia 1": {
+        "monster": 1,
+        "attack": 100,
+        "defense": 200,
+        "regen": 100,
+        "health": 300,
+        "gold": 100,
+        "room_num": 20,
+        "description": "A green creature made of thin, papery discs."
+    },
+    "Spinia 2": {
+        "monster": 1,
+        "attack": 100,
+        "defense": 200,
+        "regen": 100,
+        "health": 300,
+        "gold": 100,
+        "room_num": 20,
+        "description": "A green creature made of thin, papery discs."
+    },
+    "Dazzle": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 100,
+        "health": 300,
+        "gold": 20,
+        "room_num": 23,
+        "description": "A star piece collector who lives in the Rogueport Sewers. He gives Mario badges in exchange for star pieces."
+    },
+    "Eddy the Mask": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 100,
+        "health": 100,
+        "gold": 200,
+        "room_num": 23,
+        "description": "A blue shy-guy bandit who knows a thing or two about stylish moves."
+    },
+    "Shopkeeper": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 100,
+        "health": 100,
+        "gold": 20000,
+        "room_num": 24,
+        "description": "A friendly orange toad in charge of the Deepdown Depot."
+    },
+    "Merluvlee": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 200,
+        "health": 300,
+        "gold": 5000,
+        "room_num": 25,
+        "description": "A wizard who can locate star pieces and shine sprites and advise Mario on where to go next."
+    },
+    "Spiky Goomba 1": {
+        "monster": 1,
+        "attack": 200,
+        "defense": 100,
+        "regen": 100,
+        "health": 300,
+        "gold": 150,
+        "room_num": 27,
+        "description": "A goomba wearing a green helmet with a spike. Do not jump on it."
+    },
+    "Spiky Goomba 2": {
+        "monster": 1,
+        "attack": 200,
+        "defense": 100,
+        "regen": 100,
+        "health": 300,
+        "gold": 150,
+        "room_num": 27,
+        "description": "A goomba wearing a green helmet with a spike. Do not jump on it."
+    },
+    "Crystallite 1": {
+        "monster": 1,
+        "attack": 100,
+        "defense": 300,
+        "regen": 50,
+        "health": 100,
+        "gold": 50,
+        "room_num": 28,
+        "description": "A small, passive creature with sharp pincers and an iceberg-like feature on its back."
+    },
+    "Crystallite 2": {
+        "monster": 1,
+        "attack": 100,
+        "defense": 300,
+        "regen": 50,
+        "health": 100,
+        "gold": 50,
+        "room_num": 28,
+        "description": "A small, passive creature with sharp pincers and an iceberg-like feature on its back."
+    },
+    "Flickerbat Swarm": {
+        "monster": 0,
+        "attack": 100,
+        "defense": 0,
+        "regen": 50,
+        "health": 100,
+        "gold": 0,
+        "room_num": 28,
+        "description": "A group of flickerbats, flying creatures that use optical camouflaging to flicker in and out of the visible spectrum. You don't bother them, they don't bother you."
+    },
+    "Baby Sheegoth 1": {
+        "monster": 1,
+        "attack": 300,
+        "defense": 200,
+        "regen": 100,
+        "health": 300,
+        "gold": 200,
+        "room_num": 28,
+        "description": "The young of the Sheegoth species. They have two legs and six eyes covered with ice plating. Their huge mouths are wide open with sharp fangs that desparately want to bite you."
+    },
+    "Pulse Bombu 1": {
+        "monster": 1,
+        "attack": 250,
+        "defense": 400,
+        "regen": 50,
+        "health": 100,
+        "gold": 150,
+        "room_num": 29,
+        "description": "A creature comprised entirely of raw electricity. It resembles a cyan nucleus with three yellow-green spheres attached to it."
+    },
+    "Pulse Bombu 2": {
+        "monster": 1,
+        "attack": 250,
+        "defense": 400,
+        "regen": 50,
+        "health": 100,
+        "gold": 150,
+        "room_num": 29,
+        "description": "A creature comprised entirely of raw electricity. It resembles a cyan nucleus with three yellow-green spheres attached to it."
+    },
+    "Scatter Bombu": {
+        "monster": 1,
+        "attack": 250,
+        "defense": 400,
+        "regen": 50,
+        "health": 150,
+        "gold": 150,
+        "room_num": 29,
+        "description": "Similar to Pulse Bombus, except they are pink and purple and can only be damaged with the wave beam. If Samus gets too close to them, her vision is obscured."
+    },
+    "Baby Sheegoth 2": {
+        "monster": 1,
+        "attack": 300,
+        "defense": 200,
+        "regen": 100,
+        "health": 300,
+        "gold": 200,
+        "room_num": 30,
+        "description": "The young of the Sheegoth species. They have two legs and six eyes covered with ice plating. Their huge mouths are wide open with sharp fangs that desparately want to bite you."
+    },
+    "Crystallite 3": {
+        "monster": 1,
+        "attack": 100,
+        "defense": 300,
+        "regen": 50,
+        "health": 100,
+        "gold": 50,
+        "room_num": 30,
+        "description": "A small, passive creature with sharp pincers and an iceberg-like feature on its back."
+    },
+    "Pulse Bombu 3": {
+        "monster": 1,
+        "attack": 250,
+        "defense": 400,
+        "regen": 50,
+        "health": 100,
+        "gold": 150,
+        "room_num": 30,
+        "description": "A creature comprised entirely of raw electricity. It resembles a cyan nucleus with three yellow-green spheres attached to it."
+    },
+    "Chozo Statue": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 65535,
+        "regen": 0,
+        "health": 9999,
+        "gold": 0,
+        "room_num": 30,
+        "description": "A statue depicting a Chozo balancing the plane of existence on his hands."
+    },
+    "Sheegoth": {
+        "monster": 1,
+        "attack": 600,
+        "defense": 300,
+        "regen": 50,
+        "health": 6000,
+        "gold": 10000,
+        "room_num": 32,
+        "description": "A large, two-legged blue creature with energy-absorbing crystals on its back. Fighting it alone is probably not a great idea."
+    },
+    "Vivian": {
+        "monster": 0,
+        "attack": 300,
+        "defense": 150,
+        "regen": 100,
+        "health": 300,
+        "gold": 100,
+        "room_num": 34,
+        "description": "A purple ghost with a pink and white-striped hat. Originally a member of the Shadow Sirens trio, she defects and joins Mario on the good side."
+    },
+    "Pig 1": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 0,
+        "health": 300,
+        "gold": 0,
+        "room_num": 34,
+        "description": "A Twilighter who has been turned into a pig by Doopliss. Tragic."
+    },
+    "Pig 2": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 0,
+        "health": 300,
+        "gold": 0,
+        "room_num": 34,
+        "description": "A Twilighter who has been turned into a pig by Doopliss. Tragic."
+    },
+    "Pig 3": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 0,
+        "health": 300,
+        "gold": 0,
+        "room_num": 34,
+        "description": "A Twilighter who has been turned into a pig by Doopliss. Tragic."
+    },
+    "Mayor Dour": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 0,
+        "health": 100,
+        "gold": 500,
+        "room_num": 35,
+        "description": "An old Twilighter in charge of Twilight town. Patches of fluff and loose threads can be seen on his head."
+    },
+    "Hyper Goomba": {
+        "monster": 1,
+        "attack": 300,
+        "defense": 200,
+        "regen": 50,
+        "health": 300,
+        "gold": 500,
+        "room_num": 37,
+        "description": "A green goomba with purple shoes that is much stronger than normal goombas."
+    },
+    "Hyper Paragoomba": {
+        "monster": 1,
+        "attack": 300,
+        "defense": 200,
+        "regen": 50,
+        "health": 300,
+        "gold": 500,
+        "room_num": 37,
+        "description": "A hyper goomba that happens to also have wings."
+    },
+    "Crazee Dayzee": {
+        "monster": 1,
+        "attack": 200,
+        "defense": 200,
+        "regen": 100,
+        "health": 500,
+        "gold": 600,
+        "room_num": 38,
+        "description": "A flower-like enemy that is capable of putting Mario to sleep. They like to run away from battle at low HP."
+    },
+    "Hyper Cleft": {
+        "monster": 1,
+        "attack": 200,
+        "defense": 500,
+        "regen": 50,
+        "health": 150,
+        "gold": 650,
+        "room_num": 38,
+        "description": "A bright green Cleft with purple shoes. Large spikes cover its head and back, so jumping on it is not advised."
+    },
+    "Boo 1": {
+        "monster": 1,
+        "attack": 200,
+        "defense": 200,
+        "regen": 100,
+        "health": 300,
+        "gold": 200,
+        "room_num": 40,
+        "description": "A white ghost with a large tongue. They turn invisible when you look their direction."
+    },
+    "Boo 2": {
+        "monster": 1,
+        "attack": 200,
+        "defense": 200,
+        "regen": 100,
+        "health": 300,
+        "gold": 200,
+        "room_num": 40,
+        "description": "A white ghost with a large tongue. They turn invisible when you look their direction."
+    },
+    "Boo 3": {
+        "monster": 1,
+        "attack": 200,
+        "defense": 200,
+        "regen": 100,
+        "health": 300,
+        "gold": 200,
+        "room_num": 40,
+        "description": "A white ghost with a large tongue. They turn invisible when you look their direction."
+    },
+    "Swooper 1": {
+        "monster": 1,
+        "attack": 300,
+        "defense": 500,
+        "regen": 100,
+        "health": 300,
+        "gold": 200,
+        "room_num": 41,
+        "description": "A purple and salmon-colored bat that steals Mario's HP. They \"hang\" out outside Creepy Steeple."
+    },
+    "Swooper 2": {
+        "monster": 1,
+        "attack": 300,
+        "defense": 500,
+        "regen": 100,
+        "health": 300,
+        "gold": 200,
+        "room_num": 41,
+        "description": "A purple and salmon-colored bat that steals Mario's HP. They \"hang\" out outside Creepy Steeple."
+    },
+    "Doopliss": {
+        "monster": 1,
+        "attack": 500,
+        "defense": 500,
+        "regen": 100,
+        "health": 4000,
+        "gold": 7500,
+        "room_num": 42,
+        "description": "A figure covered in a white sheet that steals Mario's identity."
+    },
+    "Blogg 1": {
+        "monster": 1,
+        "attack": 300,
+        "defense": 200,
+        "regen": 100,
+        "health": 300,
+        "gold": 500,
+        "room_num": 44,
+        "description": "A large, aquatic predator native to the Torvus Bog. As it rushes its target, it exposes its only weak spot: its mouth."
+    },
+    "Blogg 2": {
+        "monster": 1,
+        "attack": 300,
+        "defense": 200,
+        "regen": 100,
+        "health": 300,
+        "gold": 500,
+        "room_num": 45,
+        "description": "A large, aquatic predator native to the Torvus Bog. As it rushes its target, it exposes its only weak spot: its mouth."
+    },
+    "Blogg 3": {
+        "monster": 1,
+        "attack": 300,
+        "defense": 200,
+        "regen": 100,
+        "health": 300,
+        "gold": 500,
+        "room_num": 45,
+        "description": "A large, aquatic predator native to the Torvus Bog. As it rushes its target, it exposes its only weak spot: its mouth."
+    },
+    "Bloggling 1": {
+        "monster": 1,
+        "attack": 350,
+        "defense": 100,
+        "regen": 50,
+        "health": 200,
+        "gold": 400,
+        "room_num": 45,
+        "description": "An infantile Blogg. It has not yet developed its three maws and sonic blast ability. It is extremely aggressive and more frequently rams its foes."
+    },
+    "Blogg 4": {
+        "monster": 1,
+        "attack": 300,
+        "defense": 200,
+        "regen": 100,
+        "health": 300,
+        "gold": 500,
+        "room_num": 46,
+        "description": "A large, aquatic predator native to the Torvus Bog. As it rushes its target, it exposes its only weak spot: its mouth."
+    },
+    "Blogg 5": {
+        "monster": 1,
+        "attack": 300,
+        "defense": 200,
+        "regen": 100,
+        "health": 300,
+        "gold": 500,
+        "room_num": 47,
+        "description": "A large, aquatic predator native to the Torvus Bog. As it rushes its target, it exposes its only weak spot: its mouth."
+    },
+    "Grenchler": {
+        "monster": 1,
+        "attack": 400,
+        "defense": 200,
+        "regen": 70,
+        "health": 350,
+        "gold": 650,
+        "room_num": 47,
+        "description": "An amphibious apex predator native to the Torvus Bog. It has two legs, massive jaws, and several red, beady eyes. They are essentially just a rip-off of the Sheegoth species from the first game."
+    },
+    "G-Sch": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 0,
+        "health": 0,
+        "gold": 0,
+        "room_num": 47,
+        "description": "A male Luminoth Keybearer. His logbook entry is as follows: What craven savages are the Ing! Trapped in the catacombs with no chance of rescue, I fought them to the last. I watched them feed upon their dead. I heard them pressing the lesser of their number into the front ranks, that my blasts would take them. At least their leader stood against me in battle. He was a foe worthy of a Luminoth warrior."
+    },
+    "Blogg 6": {
+        "monster": 1,
+        "attack": 300,
+        "defense": 200,
+        "regen": 100,
+        "health": 300,
+        "gold": 500,
+        "room_num": 48,
+        "description": "A large, aquatic predator native to the Torvus Bog. As it rushes its target, it exposes its only weak spot: its mouth."
+    },
+    "Bloggling 2": {
+        "monster": 1,
+        "attack": 350,
+        "defense": 100,
+        "regen": 50,
+        "health": 200,
+        "gold": 400,
+        "room_num": 48,
+        "description": "An infantile Blogg. It has not yet developed its three maws and sonic blast ability. It is extremely aggressive and more frequently rams its foes."
+    },
+    "Bloggling 3": {
+        "monster": 1,
+        "attack": 350,
+        "defense": 100,
+        "regen": 50,
+        "health": 200,
+        "gold": 400,
+        "room_num": 48,
+        "description": "An infantile Blogg. It has not yet developed its three maws and sonic blast ability. It is extremely aggressive and more frequently rams its foes."
+    },
+    "Alpha Blogg": {
+        "monster": 1,
+        "attack": 65535,
+        "defense": 65535,
+        "regen": 65535,
+        "health": 32767,
+        "gold": 65535,
+        "room_num": 50,
+        "description": "The head of the Blogg pack. It has the same weaknesses and strengths as regular Bloggs, except for the fact that it basically cheats and you almost can't win. Good luck."
+    },
+    "Cooper": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 0,
+        "health": 0,
+        "gold": 0,
+        "room_num": 50,
+        "description": "A naive player who attempted to face the Alpha Blogg. Needless to say, he was unsuccessful."
+    },
+    "Spinia 3": {
+        "monster": 1,
+        "attack": 100,
+        "defense": 200,
+        "regen": 100,
+        "health": 300,
+        "gold": 100,
+        "room_num": 51,
+        "description": "A green creature made of thin, papery discs."
+    },
+    "Spinia 4": {
+        "monster": 1,
+        "attack": 100,
+        "defense": 200,
+        "regen": 100,
+        "health": 300,
+        "gold": 100,
+        "room_num": 51,
+        "description": "A green creature made of thin, papery discs."
+    },
+    "Spinia 5": {
+        "monster": 1,
+        "attack": 100,
+        "defense": 200,
+        "regen": 100,
+        "health": 300,
+        "gold": 100,
+        "room_num": 51,
+        "description": "A green creature made of thin, papery discs."
+    },
+    "Dark Puff 1": {
+        "monster": 1,
+        "attack": 200,
+        "defense": 200,
+        "regen": 100,
+        "health": 500,
+        "gold": 300,
+        "room_num": 54,
+        "description": "A gray cloud enemy with a grin on its face. It floats around menacingly."
+    },
+    "Dark Puff 2": {
+        "monster": 1,
+        "attack": 200,
+        "defense": 200,
+        "regen": 100,
+        "health": 500,
+        "gold": 300,
+        "room_num": 54,
+        "description": "A gray cloud enemy with a grin on its face. It floats around menacingly."
+    },
+    "Pale Piranha 1": {
+        "monster": 1,
+        "attack": 400,
+        "defense": 200,
+        "regen": 100,
+        "health": 500,
+        "gold": 500,
+        "room_num": 54,
+        "description": "A monochrome piranha plant that chases after Mario by digging beneath the surface and popping up near him."
+    },
+    "Dark Puff 3": {
+        "monster": 1,
+        "attack": 200,
+        "defense": 200,
+        "regen": 100,
+        "health": 500,
+        "gold": 300,
+        "room_num": 55,
+        "description": "A gray cloud enemy with a grin on its face. It floats around menacingly."
+    },
+    "Pale Piranha 2": {
+        "monster": 1,
+        "attack": 400,
+        "defense": 200,
+        "regen": 100,
+        "health": 500,
+        "gold": 500,
+        "room_num": 55,
+        "description": "A monochrome piranha plant that chases after Mario by digging beneath the surface and popping up near him."
+    },
+    "Madame Flurrie": {
+        "monster": 0,
+        "attack": 200,
+        "defense": 300,
+        "regen": 100,
+        "health": 400,
+        "gold": 45000,
+        "room_num": 56,
+        "description": "A purple wind spirit who ultimately joins Mario's battle party. She has the ability to uncover secrets with her gusts of wind."
+    },
+    "Engineer": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 0,
+        "health": 200,
+        "gold": 15000,
+        "room_num": 59,
+        "description": "A toad engineer in charge of operating the train."
+    },
+    "Zip Toad": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 0,
+        "health": 200,
+        "gold": 50000,
+        "room_num": 59,
+        "description": "A movie star with a big ego. Is this really him though?"
+    },
+    "Waitress": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 0,
+        "health": 200,
+        "gold": 7000,
+        "room_num": 59,
+        "description": "A toad waitress with long purple hair. She is in love with Zip Toad, who just happens to also be on board... Or so she thinks."
+    },
+    "Businessman": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 0,
+        "health": 300,
+        "gold": 10000,
+        "room_num": 60,
+        "description": "A thirty-year-old blue Ratooey on a business trip to Poshley Heights. His briefcase contains a dangerous new invention."
+    },
+    "Toadia": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 0,
+        "health": 200,
+        "gold": 12000,
+        "room_num": 60,
+        "description": "A green toad living in Poshley Heights. She is the secretary of the Luigi Fan Club."
+    },
+    "Goldbob": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 0,
+        "health": 500,
+        "gold": 65535,
+        "room_num": 61,
+        "description": "An extremely rich gold bob-omb whose primary residence is in Poshley Heights. He owns just about everything."
+    },
+    "Sylvia": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 0,
+        "health": 500,
+        "gold": 65535,
+        "room_num": 61,
+        "description": "A silver bob-omb married to Goldbob. She wears pink shoes and a pink hat, both of which look unreasonably expensive."
+    },
+    "Bub": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 0,
+        "health": 500,
+        "gold": 65535,
+        "room_num": 61,
+        "description": "Goldbob's and Sylvia's son. He is a young, bronze bob-omb who aspires to become a train engineer in the future."
+    },
+    "Pennington": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 0,
+        "health": 500,
+        "gold": 40000,
+        "room_num": 62,
+        "description": "A blue penguin detective who helps Mario solve the mystery on the Excess Express. He lives in the Poshley Sanctum."
+    },
+    "Dark Boo 1": {
+        "monster": 1,
+        "attack": 300,
+        "defense": 200,
+        "regen": 100,
+        "health": 450,
+        "gold": 300,
+        "room_num": 63,
+        "description": "A more dangerous boo variant. It has a purple body and yellow eyes."
+    },
+    "Dark Boo 2": {
+        "monster": 1,
+        "attack": 300,
+        "defense": 200,
+        "regen": 100,
+        "health": 450,
+        "gold": 300,
+        "room_num": 63,
+        "description": "A more dangerous boo variant. It has a purple body and yellow eyes."
+    },
+    "Dark Boo 3": {
+        "monster": 1,
+        "attack": 300,
+        "defense": 200,
+        "regen": 100,
+        "health": 450,
+        "gold": 300,
+        "room_num": 63,
+        "description": "A more dangerous boo variant. It has a purple body and yellow eyes."
+    },
+    "Dark Boo 4": {
+        "monster": 1,
+        "attack": 300,
+        "defense": 200,
+        "regen": 100,
+        "health": 450,
+        "gold": 300,
+        "room_num": 63,
+        "description": "A more dangerous boo variant. It has a purple body and yellow eyes."
+    },
+    "Dark Boo 5": {
+        "monster": 1,
+        "attack": 300,
+        "defense": 200,
+        "regen": 100,
+        "health": 450,
+        "gold": 300,
+        "room_num": 63,
+        "description": "A more dangerous boo variant. It has a purple body and yellow eyes."
+    },
+    "Mr. Hoggle": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 0,
+        "health": 500,
+        "gold": 5000,
+        "room_num": 65,
+        "description": "A pig-like fellow who runs the hotdog stand in Glitzville. He has been selling hot dogs for over 30 years."
+    },
+    "Podler": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 0,
+        "health": 300,
+        "gold": 8000,
+        "room_num": 66,
+        "description": "He looks exactly like Podley in Rogueport. Apparently he is passionate about hammers."
+    },
+    "Rawk Hawk": {
+        "monster": 0,
+        "attack": 500,
+        "defense": 300,
+        "regen": 300,
+        "health": 6000,
+        "gold": 40000,
+        "room_num": 67,
+        "description": "A yellow, built bird-man who used to be the champion of the Glitz Pit. Mario has since dethroned him. He has an enormous ego and fans constantly swarm around him."
+    },
+    "Jolene": {
+        "monster": 0,
+        "attack": 0,
+        "defense": 0,
+        "regen": 0,
+        "health": 200,
+        "gold": 20000,
+        "room_num": 67,
+        "description": "A pink toad with blonde hair that helps Mario defeat Grubba, the head of the Glitz Pit who used the crystal star's power to maintain control over others."
+    }
+}
