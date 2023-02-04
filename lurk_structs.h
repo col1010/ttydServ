@@ -59,6 +59,7 @@ struct character {
     char* description;
     int16_t fd; // not part of lurk, but helpful server-side
     uint8_t npc; // also not part of lurk, but used to differentiate between people-made characters and NPCs
+    int16_t initial_health; // also not part of lurk, used to track the initial health of enemies
 }__attribute__((packed));
 
 #define STAT_LIMIT 65535

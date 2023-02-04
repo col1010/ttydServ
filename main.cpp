@@ -54,7 +54,8 @@ map<uint16_t, room> room_map; // map populated on server initialization that con
 map<uint16_t, vector<uint16_t>> connection_map; // map populated on server initialization that contains room numbers and their associated connections
 set<string> allowed_in_twilight_town; // a set including the names of players who are allowed into Twilight Town. Players must locate Darkly in-game and send a pvp request to him to gain access to Twilight Town
 
-vector<thread> threads; // vector of threads, free them when closing server
+map<thread::id, thread> threads;
+mutex thread_mutex; // lock when inserting / removing threads from the set
 
 atomic<bool> exit_thread {false}; // set an atomic bool to false that controls when threads handling clients should terminate
 
@@ -95,6 +96,7 @@ int main(int argc, char** argv) {
 
 	if( bind(skt, (struct sockaddr *)(&sad), sizeof(struct sockaddr_in)) ){
 		perror("bind");
+        close_server(SIGINT);
 		return 1;
 	}
 	if( listen(skt, 5) ){
@@ -112,7 +114,11 @@ int main(int argc, char** argv) {
 			break;
 		}
 		printf("Connection made from address %s\n", inet_ntoa(client_address.sin_addr));
-		threads.push_back(thread(handle_client, client_fd)); // create a thread to handle the client
+        thread t (handle_client, client_fd); // create a thread to handle the client
+        printf("Thread with ID %x started\n", t.get_id());
+        thread_mutex.lock();
+        threads.insert(make_pair(t.get_id(), move(t)));
+        thread_mutex.unlock();
 	}
     return 0;
 }
@@ -149,6 +155,10 @@ void handle_client(int client_fd) {
                     character_mutex.unlock();
                 }
             close(client_fd);
+            thread_mutex.lock();
+            threads.find(this_thread::get_id())->second.detach();
+            threads.erase(this_thread::get_id());
+            thread_mutex.unlock();
             return;
         }
         printf("Type received from \"%s\": %u\n", client_name.c_str(), type);
@@ -385,8 +395,7 @@ void handle_client(int client_fd) {
             if (c->attack + c->defense + c->regen > INITIAL_STATS) {
                 character_mutex.unlock();
                 send_error(client_fd, 4, "Inappropriate player stats (too high). Try again");
-                free(c->description);
-                free(c);
+                free_character(c);
                 continue;
             }
             if (character_map.find(name) != character_map.end()) { // if a player with that name is already in the server
@@ -397,6 +406,7 @@ void handle_client(int client_fd) {
                     }
                     tmp->flags |= ALIVE | READY | STARTED; // revive the character
                     printf("Character with name %s was revived\n", tmp->name);
+                    free_character(c); // free the character sent from the user
                     c = tmp; // set the client's character to the one already in the map
                     cur_room = c->room_num;
                     c->fd = client_fd; // update the file descriptor
@@ -409,6 +419,7 @@ void handle_client(int client_fd) {
                 } else { // else the player is alive, so do not permit joining
                     send_error(client_fd, 2, "A player with that name is currently playing, choose a different name");
                     printf("Character with name \"%s\" fd %d rejected, player with the same name is alive in the server\n", tmp->name, client_fd);
+                    free_character(c);
                     character_mutex.unlock();
                 }
                 continue;
@@ -451,6 +462,10 @@ void handle_client(int client_fd) {
                 character_mutex.unlock();
             }
             close(client_fd);
+            thread_mutex.lock();
+            threads.find(this_thread::get_id())->second.detach();
+            threads.erase(this_thread::get_id());
+            thread_mutex.unlock();
             return; // exit the thread
         } else { // if the client sent an out-of-protocol type
             printf("%s with fd %d has sent a strange type (%u). Disconnecting them now\n", client_name.c_str(), client_fd, type);
@@ -461,10 +476,18 @@ void handle_client(int client_fd) {
                 character_mutex.unlock();
             }
             close(client_fd);
+            thread_mutex.lock();
+            threads.find(this_thread::get_id())->second.detach();
+            threads.erase(this_thread::get_id());
+            thread_mutex.unlock();
             return;
         }
     }
-	close(client_fd);
+    printf("Exiting thread %x for player %s\n", this_thread::get_id(), client_name.c_str());
+    character_mutex.lock();
+    c->fd = -1; // this ensures other threads do not try to send this client information as the thread is closing
+    character_mutex.unlock();
+    close(client_fd);
 }
 
 void set_up_rooms() {
@@ -518,13 +541,14 @@ void set_up_NPCs() {
     int num_NPCs = 0;
     
     for (rapidjson::Value::MemberIterator itr = doc.MemberBegin(); itr != doc.MemberEnd(); ++itr) {
-        character *tmp_char = (character*) malloc(CHARACTER_HEADER_SIZE + sizeof(size_t) + sizeof(int16_t) + sizeof(uint8_t)); // create a character
+        character *tmp_char = (character*) malloc(CHARACTER_HEADER_SIZE + sizeof(size_t) + sizeof(int16_t) + sizeof(uint8_t) + sizeof(int16_t)); // create a character
         tmp_char->type = 10;
         strncpy(tmp_char->name, itr->name.GetString(), 32);
         tmp_char->attack = itr->value["attack"].GetInt();
         tmp_char->defense = itr->value["defense"].GetInt();
         tmp_char->regen = itr->value["regen"].GetInt();
         tmp_char->health = itr->value["health"].GetInt();
+        tmp_char->initial_health = tmp_char->health;
         tmp_char->gold = itr->value["gold"].GetInt();
         tmp_char->room_num = itr->value["room_num"].GetInt();
         tmp_char->desc_len = strlen(itr->value["description"].GetString()); // set the description length
@@ -556,7 +580,7 @@ void change_room(int fd, uint16_t room_num, uint16_t cur_room, character* c) {
     send_room(fd, &room_map.at(room_num)); // send the new room description
     send_connections(fd, &room_map, &connection_map.at(room_num)); // send the connections
     character_mutex.lock();
-    auto it = find(room_characters_map.at(cur_room).begin(), room_characters_map.at(cur_room).end(), c); // get an interator to this thread's character in the room character map
+    auto it = find(room_characters_map.at(cur_room).begin(), room_characters_map.at(cur_room).end(), c); // get an iterator to this thread's character in the room character map
     room_characters_map.at(cur_room).erase(it); // remove the character from the old room
     c->room_num = room_num; // set the character's room number to the requested room
     send_ch_to_all_in_room(c, &room_characters_map, cur_room); // send an updated character to everyone in the old room
@@ -631,29 +655,30 @@ void free_character(struct character* c) {
 }
 
 void close_server(int signal_number) {
-    character_mutex.lock();
 
-	printf("\nClosing down the server\n\n");
+    printf("\nClosing down the server\n\n");
+    printf("Waiting for threads to finish...\n");
+    printf("Number of threads in the threads set: %d\n", threads.size());
+    exit_thread = true; // set exit_thread to true so the threads handling clients will terminate
+    thread_mutex.lock();
+    for (auto& t : threads) { // for each thread
+        t.second.join(); // wait until it finishes
+    }
+    thread_mutex.unlock();
+
     close(skt); // close the socket 
-    printf("Freeing rooms...\n");
+    printf("\n\nFreeing rooms...\n");
     for (auto r : room_map) { // free each room
         free(r.second.description);
     }
     printf("Done\n\n");
     printf("Freeing characters...\n");
     //printf("Number of characters not including NPCs or monsters: %d\n", character_map.size() - 36);
-    for (auto c : character_map) { // free each character
-        free(c.second->description);
-        free(c.second);
+    for (auto& c : character_map) { // free each character
+        free_character(c.second);
     }
     printf("Done\n\n");
-    printf("Waiting for threads to finish...\n");
-    exit_thread = true; // set exit_thread to true so the threads handling clients will terminate
-    for (auto& t : threads) { // for each thread
-        t.join(); // wait until it finishes
-    }
-    printf("Done\n\n");
-    character_mutex.unlock();
+    
     exit(EXIT_SUCCESS); // exit
 }
 
@@ -689,7 +714,7 @@ bool create_bots(uint16_t room_num) {
         while (!used_names.insert(rand_name).second) { // while the insertion was unsuccessful (name already used)
             rand_name = name_list[name_distrib(gen)]; // try another name
         }
-        character* bot = (character*) malloc(CHARACTER_HEADER_SIZE + sizeof(size_t) + sizeof(int16_t) + sizeof(uint8_t)); // create a character
+        character* bot = (character*) malloc(CHARACTER_HEADER_SIZE + sizeof(size_t) + sizeof(int16_t) + sizeof(uint8_t) + sizeof(int16_t)); // create a character
         bot->type = 10;
         strncpy(bot->name, rand_name.c_str(), 32);
         bot->attack = INITIAL_STATS / 2;
@@ -697,6 +722,7 @@ bool create_bots(uint16_t room_num) {
         bot->regen = INITIAL_STATS / 4;
         bot->flags = ALIVE | READY | STARTED | JOIN_BATTLE;
         bot->health = INITIAL_HEALTH;
+        bot->initial_health = INITIAL_HEALTH;
         bot->gold = 100;
         bot->room_num = room_num;
         bot->desc_len = 4; // set the description length

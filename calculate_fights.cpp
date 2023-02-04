@@ -44,7 +44,7 @@ void enemies_attack(character* player, map<uint16_t, vector<character*>>* room_c
     int total_attack = 0;
     int damage_dealt;
     for (auto enemy : room_enemies_map->at(player->room_num)) {
-        if ((enemy->flags & ALIVE) != ALIVE) continue; // skip dead monsters
+        if (!(enemy->flags & ALIVE)) continue; // skip dead monsters
         total_attack += calculate_attack(enemy->attack); // total up all the enemies' combined attack
     }
 
@@ -61,15 +61,16 @@ void enemies_attack(character* player, map<uint16_t, vector<character*>>* room_c
 
     int cnt = 0; // the number of battling players to split damage among
     for (auto p : room_characters_map->at(player->room_num)) { // for each player in the room
-        if (((p->flags & ALIVE) != ALIVE) || p->npc) continue; // if the player is an NPC or dead, skip
-        if (((p->flags & MONSTER) == MONSTER) || ((p->flags & JOIN_BATTLE) != JOIN_BATTLE) && p != player) continue; // if the player is a monster or does not have auto-join battles set AND they are not the one who initiated the fight 
+        if (!(p->flags & ALIVE)) continue; // if the player is dead, skip
+        if (((p->flags & MONSTER) || !(p->flags & JOIN_BATTLE)) && p != player) continue; // if the player is a monster or does not have auto-join battles set AND they are not the one who initiated the fight 
         cnt++;
     }
 
     total_attack /= cnt; // spread the damage evenly among the living players
     
     for (auto p : room_characters_map->at(player->room_num)) { // for each player in the room
-        if (p != player && ((p->flags & JOIN_BATTLE) != JOIN_BATTLE)) continue; // if the current player opted out of auto-join battles and they are not the one who initiated the fight, skip
+        if (p != player && !(p->flags & JOIN_BATTLE)) continue; // if the current player opted out of auto-join battles and they are not the one who initiated the fight, skip
+        if (!(p->flags & ALIVE)) continue;
         damage_dealt = total_attack - p->defense; // damage dealt will be the attack minus a player's defense
         if (damage_dealt < 0) // if a player has more defense than incoming attack strength, return it to 0
             damage_dealt = 0;
@@ -79,9 +80,9 @@ void enemies_attack(character* player, map<uint16_t, vector<character*>>* room_c
             p->health -= damage_dealt; // subtract the enemies' attack from each players' health
         
         uint16_t regen = p->regen / 10;
-        if (p->health < INITIAL_HEALTH) { // if the player has less than INITIAL_HEALTH hp
-            if (p->health + regen > INITIAL_HEALTH) { // if the regen would increase the player's health above the INITIAL_HEALTH, only add enough to get to INITIAL_HEALTH
-                p->health = INITIAL_HEALTH;
+        if (p->health < p->initial_health) { // if the player has less than INITIAL_HEALTH hp
+            if (p->health + regen > p->initial_health) { // if the regen would increase the player's health above the INITIAL_HEALTH, only add enough to get to INITIAL_HEALTH
+                p->health = p->initial_health;
                 send_narrator_msg(p->fd, p->name, "Your regeneration healed you back to full health!");
             } else {
                 p->health += regen; // add on the player's regen divided by 10
@@ -105,8 +106,8 @@ void players_attack(character* player, map<uint16_t, vector<character*>>* room_c
     vector<character*> tmp_vec;
     
     for (auto p : room_characters_map->at(player->room_num)) {
-        if ((p->flags & ALIVE) != ALIVE) continue; // if the player is dead, skip
-        if ((((p->flags & MONSTER) == MONSTER) || ((p->flags & JOIN_BATTLE) != JOIN_BATTLE) || p->npc) && p != player) continue; // if the character is a monster or an NPC or they opted out of auto-join battles, skip unless they are the one who initiated the fight
+        if (!(p->flags & ALIVE)) continue; // if the player is dead, skip
+        if (((!(p->flags & MONSTER)) || (!(p->flags & JOIN_BATTLE))) && p != player) continue; // if the character is a monster or they opted out of auto-join battles, skip unless they are the one who initiated the fight
         total_attack += calculate_attack(p->attack); // total up all the players' combined attack
         tmp_vec.push_back(p);
     }
@@ -137,9 +138,10 @@ void players_attack(character* player, map<uint16_t, vector<character*>>* room_c
         else
             enemy->health -= damage_dealt; // subtract the enemies' attack from each players' health
         uint16_t regen = enemy->regen / 10;
-        if (enemy->health < INITIAL_HEALTH) { // if the enemy has less than INITIAL_HEALTH hp
-            if (enemy->health + regen > INITIAL_HEALTH) // if the regen would increase the enemy's health above the INITIAL_HEALTH, only add enough to get to INITIAL_HEALTH
-                enemy->health = INITIAL_HEALTH;
+        // TODO: this is wrong, INITIAL_HEALTH only applies to the players
+        if (enemy->health < enemy->initial_health) { // if the enemy has less than INITIAL_HEALTH hp
+            if (enemy->health + regen > enemy->initial_health) // if the regen would increase the enemy's health above its initial health, only add enough to get to initial health
+                enemy->health = enemy->initial_health;
             else
                 enemy->health += regen; // add on the player's regen divided by 10
         }
@@ -168,7 +170,7 @@ void initiate_fight(character* player, map<uint16_t, vector<character*>>* room_c
     }
     int cnt = 0; // the number of living enemies to split damage among
     for (auto enemy : room_enemies_map->at(player->room_num)) // for each enemy in the room
-        if ((enemy->flags & ALIVE) == ALIVE) // increment the counter if the enemy is alive
+        if (enemy->flags & ALIVE) // increment the counter if the enemy is alive
             cnt++;
     if (cnt == 0) {
         send_error(player->fd, 7, "Fight cannot be initiated. No living enemies.");

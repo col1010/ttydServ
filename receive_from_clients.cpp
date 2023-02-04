@@ -5,14 +5,15 @@
 #include <stdio.h>
 
 character* receive_character(int fd) {
-    character *c = (character*) malloc(CHARACTER_HEADER_SIZE + sizeof(size_t) + sizeof(int16_t) + sizeof(uint8_t)); // add a size_t size for the char*, add int16_t size for the client_fd at the end, add uint8_t size for npc bool
+    printf("Beginning to receive character from fd %d\n", fd);
+    character *c = (character*) malloc(CHARACTER_HEADER_SIZE + sizeof(size_t) + sizeof(int16_t) + sizeof(uint8_t) + sizeof(int16_t)); // add extra bytes for the non-lurk fields
     size_t readlen = recv(fd, &c->name, CHARACTER_HEADER_SIZE - 1, MSG_WAITALL);
     c->type = 10;
+    c->initial_health = INITIAL_HEALTH;
     c->name[31] = 0; // ensure the name sent in is null terminated
     c->description = (char*) malloc(c->desc_len + 1);
     c->description[c->desc_len] = 0; // null terminate the description
     c->npc = 0; // players are not NPCs
-    printf("Beginning to receive character from fd %d\n", fd);
     if (c->desc_len != 0)
         recv(fd, c->description, c->desc_len, MSG_WAITALL);
     printf("Done!\n");
@@ -35,5 +36,6 @@ message* receive_message(int fd) {
     m->message[m->msg_len] = 0; // null terminate the message
     if (m->msg_len != 0)
         recv(fd, m->message, m->msg_len, MSG_WAITALL);
+    printf("msg_len: %u, recip: %s, sender: %s, msg: %s\n", m->msg_len, m->recipient, m->sender, m->message);
     return m;
 }
