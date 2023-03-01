@@ -23,11 +23,14 @@
 #include<random>
 #include<cstring>
 #include<fstream>
+#include<iostream>
 #include<cstdlib>
 #include<thread>
 #include<mutex>
 #include<algorithm>
 #include<atomic>
+#include<chrono>
+#include<ctime>
 
 using namespace std;
 
@@ -40,7 +43,10 @@ void change_room(int fd, uint16_t room_num, uint16_t cur_room, character* c);
 void handle_disconnect(character* c);
 void handle_pvp(character* player, character* npc);
 bool create_bots(uint16_t room_num);
+string get_time();
 void set_socklim(int sockfd);
+
+const char* LURK_NAMES[] = {"Unused", "Message", "Changeroom", "Fight", "PVP Fight", "Loot", "Start", "Error", "Accept", "Room", "Character", "Game", "Leave", "Connection", "Version"};
 
 int skt; // the socket the server will listen on
 map<string, character*> character_map;
@@ -103,7 +109,7 @@ int main(int argc, char** argv) {
 		perror("listen");
 		return 1;
     }
-    printf("Listening on port %d\n", stoi(argv[1]));
+    printf("%s: Listening on port %d\n", get_time().c_str(), stoi(argv[1]));
 	int client_fd;
 	struct sockaddr_in client_address;
 	socklen_t address_size = sizeof(struct sockaddr_in);
@@ -113,9 +119,9 @@ int main(int argc, char** argv) {
 			perror("accept");
 			break;
 		}
-		printf("Connection made from address %s\n", inet_ntoa(client_address.sin_addr));
+        printf("%s: Connection made from address %s\n", get_time().c_str(), inet_ntoa(client_address.sin_addr));
         thread t (handle_client, client_fd); // create a thread to handle the client
-        printf("Thread with ID %x started\n", t.get_id());
+        printf("%s: Thread with ID %x started\n", get_time().c_str(), t.get_id());
         thread_mutex.lock();
         threads.insert(make_pair(t.get_id(), move(t)));
         thread_mutex.unlock();
@@ -128,7 +134,6 @@ void handle_client(int client_fd) {
 	send_game(client_fd);
     struct character* c; // the client's character
     bool received_character = false, started = false, revived = false;
-    int recv_return, err_num;
     uint16_t cur_room; // keep track of the current room in a local variable rather than just referencing the c->room_num to reduce mutex locking
     uint8_t type;
     string client_name = "[not_started_yet]";
@@ -148,7 +153,7 @@ void handle_client(int client_fd) {
         }
 
         if (recv(client_fd, &type, 1, 0) != 1) {
-            printf("%s with fd %d has disconnected ungracefully\n", client_name.c_str(), client_fd);
+            printf("%s: \"%s\" (fd %d) has disconnected ungracefully\n", get_time().c_str(), client_name.c_str(), client_fd);
             if (received_character) { // if the client created a character before disconnecting, handle it appropriately, else just close the fd and exit the thread
                     character_mutex.lock();
                     handle_disconnect(c);
@@ -161,20 +166,23 @@ void handle_client(int client_fd) {
             thread_mutex.unlock();
             return;
         }
-        printf("Type received from \"%s\": %u\n", client_name.c_str(), type);
+        printf("\n%s: Type received from \"%s\" (fd %d): %u (%s)\n", get_time().c_str(), client_name.c_str(), client_fd, type, LURK_NAMES[type]);
 
         if (type != 6 && type != 2)
             bot_add_code = 0; // reset the bot code
 
         if (type == 1) { // MESSAGE
             message *msg = receive_message(client_fd); // receive the message
+            printf("%s: Player \"%s\" wishes to send a message to \"%s\"\n", get_time().c_str(), msg->sender, msg->recipient);
             if (!received_character) {
                 send_error(client_fd, 5, "Message cannot be delivered. Make a character and start first.");
+                printf("%s: Message delivery failed, player has not created a character yet\n", get_time().c_str());
                 free(msg->message);
                 free(msg);
                 continue;
             } else if (!started) {
                 send_error(client_fd, 5, "Message cannot be delivered. Start the game first.");
+                printf("%s: Message delivery failed, player has not started the game yet\n", get_time().c_str());
                 free(msg->message);
                 free(msg);
                 continue;
@@ -185,30 +193,35 @@ void handle_client(int client_fd) {
             if (character_map.find(tmp_recipient) == character_map.end()) { // if the recipient does not exist in the server
                 character_mutex.unlock();
                 send_error(client_fd, 6, "Player with that name not found.");
+                printf("%s: Message delivery failed, recipient not found\n", get_time().c_str());
             } else if (character_map.at(tmp_recipient)->npc) { // if the character is an NPC, disallow sending messages to them
                 character_mutex.unlock();
                 send_error(client_fd, 6, "The requested character is an NPC. They cannot receive messages.");
+                printf("%s: Message delivery failed, recipient is an NPC\n", get_time().c_str());
             } else if (character_map.at(tmp_recipient)->fd == -1) {
                 character_mutex.unlock();
                 send_error(client_fd, 6, "The requested player is not currently online.");
+                printf("%s: Message delivery failed, recipient is not currently online\n", get_time().c_str());
             } else {
                 send_message(character_map.at(tmp_recipient)->fd, msg->sender, msg->recipient, msg->message); // send the message
                 character_mutex.unlock();
                 send_accept(client_fd, 1); // send the message accept to the client
+                printf("%s: Message delivery successful\n", get_time().c_str());
             }
             free(msg->message);
             free(msg);
 
         } else if (type == 2) { // CHANGEROOM
             uint16_t room_num = receive_changeroom(client_fd);
+            printf("%s: \"%s\" wishes to move from room %u to room %u\n", get_time().c_str(), client_name.c_str(), cur_room, room_num);
             if (!started) {
                 send_error(client_fd, 5, "Not ready! Ensure you have made a character and started the game.");
+                printf("%s: Changeroom unsuccessful, player has not started the game yet\n", get_time().c_str());
                 continue;
             }
             if (bot_add_code == 2 && room_num == 0) { // if the user just sent two START requests and requests a room change to room 0, activate the bot code
                 if (!create_bots(cur_room)) // attempt to create the bots and send them to the client's room
                     send_error(client_fd, 0, "Error! Cannot create bots at this moment");
-
                 bot_add_code = 0;
                 continue;
             } else if (room_num != 0) {
@@ -216,17 +229,17 @@ void handle_client(int client_fd) {
             }
             if (room_map.find(room_num) == room_map.end()) {
                 send_error(client_fd, 1, "Requested room does not exist");
+                printf("%s: Changeroom unsuccessful, requested room %u does not exist\n", get_time().c_str(), room_num);
                 continue;
             }
 
-            printf("Current room: %u\n", cur_room);
-            printf("Requested room: %u\n", room_num);
             if (find(connection_map.at(cur_room).begin(), connection_map.at(cur_room).end(), room_num) != connection_map.at(cur_room).end()) { // if the requested room is connected to the current room
                 character_mutex.lock();
 
                 if (room_num == 33) // room 33 is the Twilight Town Pipe
                     if (allowed_in_twilight_town.find(string(c->name)) == allowed_in_twilight_town.end()) { // if the player is not in the set, disallow access
                         send_error(client_fd, 1, "Access denied. To visit Twilight Town, you must first talk to (send a pvp request to) Darkly in the hidden alley of East Rogueport.");
+                        printf("%s: Changeroom unsuccessful, player does not have access to Twilight Town\n", get_time().c_str());
                         character_mutex.unlock();
                         continue;
                     }
@@ -235,12 +248,14 @@ void handle_client(int client_fd) {
                     if (strcmp(c->description, "Auto-generated test player") != 0) { // if the player is not a bot created by lurktest, disallow access
                         character_mutex.unlock();
                         send_error(client_fd, 1, "Access denied. The door is locked.");
+                        printf("%s: Changeroom unsuccessful, door is locked\n", get_time().c_str());
                         continue;
                     }
                 }
                 if (!(c->flags & ALIVE)) { // if the player is dead
                     character_mutex.unlock();
                     send_error(client_fd, 5, "You are dead. You cannot change rooms.");
+                    printf("%s: Changeroom unsuccessful, player is deceased\n", get_time().c_str());
                     continue;
                 }
                 send_accept(client_fd, 2);
@@ -248,16 +263,19 @@ void handle_client(int client_fd) {
                 character_mutex.unlock();
                 cur_room = room_num;
             } else {
-                printf("Connecting room %u requested was invalid\n", room_num);
                 send_error(client_fd, 1, "You cannot reach that room from here!");
+                printf("%s: Changeroom unsuccessful, room is inaccessible from current location\n", get_time().c_str());
             }
         
         }  else if (type == 3) { // FIGHT
+            printf("%s: \"%s\" would like to initiate a fight in room %u\n", get_time().c_str(), client_name.c_str(), cur_room);
             if (!received_character) {
                 send_error(client_fd, 5, "Fight cannot be initiated. Make a character and start the game first.");
+                printf("%s: Fight unsuccessful, player has not created a character yet\n", get_time().c_str());
                 continue;
             } else if (!started) {
                 send_error(client_fd, 5, "Fight cannot be initiated. Start the game first.");
+                printf("%s: Fight unsuccessful, player has not started the game yet\n", get_time().c_str());
                 continue;
             }
             character_mutex.lock();
@@ -266,12 +284,15 @@ void handle_client(int client_fd) {
                 send_narrator_msg(client_fd, c->name, "Your health is running low! Head to the Rogueport Inn (Room 8, connected to Rogueport Plaza via Podley's Place) to recover your health!");
             }
             character_mutex.unlock();
+            printf("%s: Fight sequence completed\n", get_time().c_str());
             
         } else if (type == 4) { // PVPFIGHT
             char name_buf[32];
             recv(client_fd, name_buf, 32, MSG_WAITALL); // receive the name
+            printf("%s: \"%s\" has submitted a PVP request to \"%s\"\n", get_time().c_str(), client_name.c_str(), name_buf);
             if (!started) {
                 send_error(client_fd, 5, "Not ready. Make a character and start the game first.");
+                printf("%s: PVP unsuccessful, player has not started the game yet\n", get_time().c_str());
                 continue;
             }
             string tmp_name = string(name_buf);
@@ -279,17 +300,20 @@ void handle_client(int client_fd) {
             if (!(c->flags & ALIVE)) {
                 character_mutex.unlock();
                 send_error(client_fd, 5, "PVP failed. You are dead.");
+                printf("%s: PVP unsuccessful, player is deceased\n", get_time().c_str());
                 continue;
             }
             if (character_map.find(tmp_name) == character_map.end()) { // if the character is nonexistent
                 character_mutex.unlock();
                 send_error(client_fd, 0, "PVP failed. Player nonexistent.");
+                printf("%s: PVP unsuccessful, requested player does not exist\n", get_time().c_str());
                 continue;
             }
             character* tmp_ch = character_map.at(tmp_name);
             if (tmp_ch->room_num != cur_room) { // if the character is not in the current room
                 character_mutex.unlock();
                 send_error(client_fd, 0, "PVP failed. Player not in this room.");
+                printf("%s: PVP unsuccessful, player is not in the current room\n", get_time().c_str());
                 continue;
             }
             handle_pvp(c, tmp_ch);
@@ -298,8 +322,10 @@ void handle_client(int client_fd) {
         } else if (type == 5) { // LOOT
             char name_buf[32];
             recv(client_fd, name_buf, 32, MSG_WAITALL); // receive the name
+            printf("%s: \"%s\" would like to loot \"%s\"\n", get_time().c_str(), client_name.c_str(), name_buf);
             if (!started) {
                 send_error(client_fd, 5, "Not ready. Make a character and start the game first.");
+                printf("%s: Loot unsuccessful, player has not started the game yet\n");
                 continue;
             }
             string tmp_name = string(name_buf);
@@ -307,27 +333,32 @@ void handle_client(int client_fd) {
             if (!(c->flags & ALIVE)) {
                 character_mutex.unlock();
                 send_error(client_fd, 5, "Loot failed. You are dead.");
+                printf("%s: Loot unsuccessful, player is deceased\n");
                 continue;
             }
             if (character_map.find(tmp_name) == character_map.end()) { // if the character is nonexistent
                 character_mutex.unlock();
                 send_error(client_fd, 3, "Loot failed. Player or monster not found.");
+                printf("%s: Loot unsuccessful, requested player does not exist\n");
                 continue;
             }
             character* tmp_ch = character_map.at(tmp_name);
             if (tmp_ch->room_num != cur_room) { // if the character is not in the current room
                 character_mutex.unlock();
                 send_error(client_fd, 3, "Loot failed. Player or monster not in the current room.");
+                printf("%s: Loot unsuccessful, requested player is not in the current room\n");
                 continue;
             }
             if (tmp_ch->gold == 0) {
                 character_mutex.unlock();
                 send_error(client_fd, 3, "Loot failed. Player or monster has no gold.");
+                printf("%s: Loot unsuccessful, requested player has no gold\n");
                 continue;
             }
             if (tmp_ch->flags & ALIVE) {
                 character_mutex.unlock();
                 send_error(client_fd, 3, "Loot failed. Player or monster is currently alive.");
+                printf("%s: Loot unsuccessful, requested player is alive\n");
                 continue;
             }
             uint16_t tmp_gold = tmp_ch->gold;
@@ -337,10 +368,13 @@ void handle_client(int client_fd) {
             send_ch_to_all_in_room(c, &room_characters_map, cur_room); // send an updated client's character to everyone in the room
             send_narrator_msg(client_fd, c->name, (string("Loot successful! ") + to_string(tmp_gold) + string(" gold was retrieved.")).c_str());
             character_mutex.unlock();
+            printf("%s: Loot successful! \"%s\" retrieved %u gold from \"%s\"\n", get_time().c_str(), client_name.c_str(), tmp_gold, name_buf);
             
         } else if (type == 6) { // START
+            printf("%s: Player with fd %d would like to start the game\n", get_time().c_str(), client_fd);
             if (!received_character) {
                 send_error(client_fd, 0, "Make a character before starting the game");
+                printf("%s: Start unsuccessful, player has not yet sent a valid character\n", get_time().c_str());
                 continue;
             } else if (started) {
                 character_mutex.lock();
@@ -351,9 +385,11 @@ void handle_client(int client_fd) {
                     send_narrator_msg(client_fd, c->name, "You blacked out and have woken up at the Rogueport Inn. Your health has been restored.");
                     cur_room = c->room_num; // update the local cur_room
                     character_mutex.unlock();
+                    printf("%s: \"%s\" has been brought back to life and sent to the inn\n", get_time().c_str(), client_name.c_str());
                 } else {
                     character_mutex.unlock();
                     send_error(client_fd, 0, "Game already started");
+                    printf("%s: Start unsuccessful, player has already started the game\n", get_time().c_str());
                     if (bot_add_code == 2) // if the user sends START for a third time, reset the bot code
                         bot_add_code = 0;
                     else
@@ -370,9 +406,12 @@ void handle_client(int client_fd) {
             if (revived) { // if the player was revived, send a different message to everyone and also a message specifically to the client who revived them
                 send_msg_to_all(&character_map, (string(c->name) + string(" has been revived!")).c_str());
                 send_narrator_msg(client_fd, c->name, (string("Your attack, defense, and regeneration are set to what this character originally had: ") + to_string(c->attack) + string(" ATK, ") + to_string(c->defense) + string(" DEF, and ") + to_string(c->regen) + " REG.").c_str());
+                printf("%s: \"%s\" has been revived and will begin in room %u\n", get_time().c_str(), client_name.c_str(), cur_room);
             }
-            else
+            else {
                 send_msg_to_all(&character_map, (string(c->name) + string(" just joined the game!")).c_str());
+                printf("%s: \"%s\" has successfully started the game!\n", get_time().c_str(), client_name.c_str());
+            }
             send_characters_in_room(client_fd, &room_characters_map, c->room_num);
             send_ch_to_all_in_room(c, &room_characters_map, c->room_num); // send the new character to everyone in the room
             room_characters_map.at(c->room_num).push_back(c); // add the character to the appropriate room
@@ -384,7 +423,7 @@ void handle_client(int client_fd) {
                 character* tmp = receive_character(client_fd); // receive the character, but get rid of it
                 free_character(tmp); // free the character
                 send_error(client_fd, 0, "Character has already been created");
-                printf("\"%s\" attempted to send another character\n", client_name);
+                printf("%s: \"%s\" attempted to send another character\n", get_time().c_str(), client_name.c_str());
                 continue;
             }
 
@@ -405,7 +444,7 @@ void handle_client(int client_fd) {
                         tmp->health = INITIAL_HEALTH;
                     }
                     tmp->flags |= ALIVE | READY | STARTED; // revive the character
-                    printf("Character with name %s was revived\n", tmp->name);
+                    printf("%s: Character with name \"%s\" was revived by the player with fd %d\n", get_time().c_str(), tmp->name, client_fd);
                     free_character(c); // free the character sent from the user
                     c = tmp; // set the client's character to the one already in the map
                     cur_room = c->room_num;
@@ -418,7 +457,7 @@ void handle_client(int client_fd) {
 
                 } else { // else the player is alive, so do not permit joining
                     send_error(client_fd, 2, "A player with that name is currently playing, choose a different name");
-                    printf("Character with name \"%s\" fd %d rejected, player with the same name is alive in the server\n", tmp->name, client_fd);
+                    printf("%s: Character with name \"%s\" rejected, player with the same name is alive in the server\n", get_time().c_str(), tmp->name);
                     free_character(c);
                     character_mutex.unlock();
                 }
@@ -447,7 +486,7 @@ void handle_client(int client_fd) {
                 if (strcmp(c->description, "Auto-generated test player") == 0) // if a bot is created from lurktest, it will have this description. Allow it access to twilight town, as the test will break without it
                     allowed_in_twilight_town.insert(client_name);
                 
-                printf("Character created: Name: %s, attack: %u, defense: %u, regen: %u, description: %s\n", c->name, c->attack, c->defense, c->regen, c->description);
+                printf("%s: Character created: Name: %s, Attack: %u, Defense: %u, Regen: %u, Description: %s\n", get_time().c_str(), c->name, c->attack, c->defense, c->regen, c->description);
                 send_accept(client_fd, 10); // send an accept of type 10 (character)
                 send_character(client_fd, c);
                 character_mutex.unlock();
@@ -455,7 +494,7 @@ void handle_client(int client_fd) {
             }
         
         } else if (type == 12) { // LEAVE
-            printf("%s with fd %d has sent a leave request\n", client_name.c_str(), client_fd);
+            printf("%s: \"%s\" has sent a leave request\n", get_time().c_str(), client_name.c_str());
             if (received_character) {
                 character_mutex.lock();
                 handle_disconnect(c);
@@ -468,7 +507,7 @@ void handle_client(int client_fd) {
             thread_mutex.unlock();
             return; // exit the thread
         } else { // if the client sent an out-of-protocol type
-            printf("%s with fd %d has sent a strange type (%u). Disconnecting them now\n", client_name.c_str(), client_fd, type);
+            printf("%s: \"%s\" (fd %d) has sent a strange type (%u). Disconnecting them now\n", get_time().c_str(), client_name.c_str(), client_fd, type);
             send_error(client_fd, 0, (string("Type " + to_string(type) + string(" is not accepted. Terminating the connection")).c_str()));
             if (received_character) {
                 character_mutex.lock();
@@ -483,7 +522,7 @@ void handle_client(int client_fd) {
             return;
         }
     }
-    printf("Exiting thread %x for player %s\n", this_thread::get_id(), client_name.c_str());
+    printf("%s: Exiting thread %x for player \"%s\" (fd %d)\n", get_time().c_str(), this_thread::get_id(), client_name.c_str(), client_fd);
     character_mutex.lock();
     c->fd = -1; // this ensures other threads do not try to send this client information as the thread is closing
     character_mutex.unlock();
@@ -588,7 +627,7 @@ void change_room(int fd, uint16_t room_num, uint16_t cur_room, character* c) {
     room_characters_map.at(room_num).push_back(c); // add the character to the new room
     send_characters_in_room(fd, &room_characters_map, room_num); // send the list of characters (which includes the client themselves) in the new room to the client
     if (room_num == 32 || room_num == 42)
-        send_narrator_msg(fd, c->name, "Playing alone or in a small group? Go ahead and send two START requests followed by a changeroom request to room 0 to add in 5 bots for assistance.");
+        send_narrator_msg(fd, c->name, "Playing alone or in a small group? Go ahead and send two START requests followed by a CHANGEROOM request to room 0 to add in 5 bots for assistance.");
 }
 
 // disconnect a character from the server, lock character_mutex before calling
@@ -619,6 +658,7 @@ void handle_pvp(character* player, character* npc) {
             send_ch_to_all_in_room(player, &room_characters_map, player->room_num);
             send_ch_to_all_in_room(npc, &room_characters_map, npc->room_num);
             send_narrator_msg(player->fd, player->name, "Your stats have been increased by 50 each!");
+            printf("%s: \"%s\" has increased their stats by 50 each\n", get_time().c_str(), player->name);
         }
     } else if (strcmp(npc->name, "Innkeeper") == 0) {
         if (player->health >= INITIAL_HEALTH) {
@@ -646,6 +686,7 @@ void handle_pvp(character* player, character* npc) {
             send_narrator_msg(player->fd, player->name, "Darkly has already written your name on your clothes! You have access to Twilight Town.");
     } else {
         send_error(player->fd, 0, "PVP failed. Target character is not interactable.");
+        printf("%s: PVP unsuccessful, target is not interactable\n", get_time().c_str());
     }
 }
 
@@ -656,9 +697,9 @@ void free_character(struct character* c) {
 
 void close_server(int signal_number) {
 
-    printf("\nClosing down the server\n\n");
-    printf("Waiting for threads to finish...\n");
-    printf("Number of threads in the threads set: %d\n", threads.size());
+    printf("\n%s: Closing down the server\n\n", get_time().c_str());
+    printf("%s: Waiting for threads to finish...\n", get_time().c_str());
+    printf("%s: Number of threads in the threads set: %d\n", get_time().c_str(), threads.size());
     exit_thread = true; // set exit_thread to true so the threads handling clients will terminate
     thread_mutex.lock();
     for (auto& t : threads) { // for each thread
@@ -667,17 +708,17 @@ void close_server(int signal_number) {
     thread_mutex.unlock();
 
     close(skt); // close the socket 
-    printf("\n\nFreeing rooms...\n");
+    printf("\n\n%s: Freeing rooms...\n", get_time().c_str());
     for (auto r : room_map) { // free each room
         free(r.second.description);
     }
-    printf("Done\n\n");
-    printf("Freeing characters...\n");
+    printf("%s: Done\n\n", get_time().c_str());
+    printf("%s: Freeing characters...\n", get_time().c_str());
     //printf("Number of characters not including NPCs or monsters: %d\n", character_map.size() - 36);
     for (auto& c : character_map) { // free each character
         free_character(c.second);
     }
-    printf("Done\n\n");
+    printf("%s: Finished!\n\n", get_time().c_str());
     
     exit(EXIT_SUCCESS); // exit
 }
@@ -736,8 +777,14 @@ bool create_bots(uint16_t room_num) {
         send_ch_to_all_in_room(bot, &room_characters_map, room_num); // send the bot character to all the players in the room
         character_mutex.unlock();
     }
-    printf("Bots were added to room %d\n", room_num);
+    printf("%s: Bots were added to room %d\n", get_time().c_str(), room_num);
     return true;
+}
+
+string get_time() {
+    time_t curr_time = time(NULL);
+    tm* local_tm = localtime(&curr_time);
+    return to_string(local_tm->tm_mon + 1) + string("/") + to_string(local_tm->tm_mday) + string("/") + to_string(local_tm->tm_year + 1900)+ string(" at ") + to_string(local_tm->tm_hour) + string(":") + to_string(local_tm->tm_min) + string(":") + to_string(local_tm->tm_sec);
 }
 
 void set_socklim(int sockfd){
