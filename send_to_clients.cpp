@@ -124,8 +124,6 @@ bool send_msg_to_all(map<string, character*>* character_map, const char * msg) {
     for (auto c : *character_map) { // for every player in the server
         if (c.second->fd == -1) continue; // skip if the player is not presently in the server or they're an NPC
         if (!send_message(c.second->fd, narrator, c.second->name, msg)) { // if the message was not sent successfully
-            int err = errno;
-            //printf("Errno: %d\n", err);
             printf("Failed in send_msg_to_all to send message to %s\n", c.second->name);
             successful = false;
         }
