@@ -166,7 +166,8 @@ void handle_client(int client_fd) {
             thread_mutex.unlock();
             return;
         }
-        printf("\n%s: Type received from \"%s\" (fd %d): %u (%s)\n", get_time().c_str(), client_name.c_str(), client_fd, type, LURK_NAMES[type]);
+        if (type > 0 && type < 13)
+            printf("\n%s: Type received from \"%s\" (fd %d): %u (%s)\n", get_time().c_str(), client_name.c_str(), client_fd, type, LURK_NAMES[type]);
 
         if (type != 6 && type != 2)
             bot_add_code = 0; // reset the bot code
@@ -507,8 +508,8 @@ void handle_client(int client_fd) {
             thread_mutex.unlock();
             return; // exit the thread
         } else { // if the client sent an out-of-protocol type
-            printf("%s: \"%s\" (fd %d) has sent a strange type (%u). Disconnecting them now\n", get_time().c_str(), client_name.c_str(), client_fd, type);
-            send_error(client_fd, 0, (string("Type " + to_string(type) + string(" is not accepted. Terminating the connection")).c_str()));
+            printf("%s: \"%s\" (fd %d) has sent an unsupported type (%u). Disconnecting them now\n", get_time().c_str(), client_name.c_str(), client_fd, type);
+            send_error(client_fd, 0, (string("Type " + to_string(type) + string(" is not accepted. Terminating the connection.")).c_str()));
             if (received_character) {
                 character_mutex.lock();
                 handle_disconnect(c);
