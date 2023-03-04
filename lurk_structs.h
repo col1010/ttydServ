@@ -1,4 +1,5 @@
 #include<stdint.h>
+#include<ctime>
 
 #pragma pack(push, 1)
 
@@ -57,9 +58,11 @@ struct character {
     uint16_t room_num;
     uint16_t desc_len;
     char* description;
-    int16_t fd; // not part of lurk, but helpful server-side
-    uint8_t npc; // also not part of lurk, but used to differentiate between people-made characters and NPCs
-    int16_t initial_health; // also not part of lurk, used to track the initial health of enemies
+    // The following fields are used server-side and are not part of LURK
+    int16_t fd; // client file descriptor
+    uint8_t npc; // Used to differentiate between player-made characters and NPCs
+    int16_t initial_health; // Used to track the initial health of enemies
+    time_t last_active_time; // Used to track when the player / enemy was last active for the cleanup routine
 }__attribute__((packed));
 
 #define STAT_LIMIT 65535
