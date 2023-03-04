@@ -19,6 +19,7 @@
 #include<vector>
 #include<random>
 #include "send_to_clients.h"
+#include <ctime>
 
 using namespace std;
 
@@ -149,6 +150,7 @@ void players_attack(character* player, map<uint16_t, vector<character*>>* room_c
             send_msg_to_all_in_room(enemy->room_num, room_characters_map, (string(enemy->name) + string(" has perished!")).c_str());
             enemy->flags = (enemy->flags & (~ALIVE)); // set the enemy to dead
             enemy->health = 0;
+            enemy->last_active_time = time(NULL); // reset its last active timer
             uint16_t gold = enemy->gold / tmp_vec.size(); // evenly distribute the prize money
             for (auto p : tmp_vec) {
                 p->gold += gold; // increase each players' gold
