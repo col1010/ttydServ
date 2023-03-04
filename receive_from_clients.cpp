@@ -3,10 +3,11 @@
 #include <sys/socket.h>
 #include "lurk_structs.h"
 #include <stdio.h>
+#include <ctime>
 
 character* receive_character(int fd) {
     //printf("Beginning to receive character from fd %d\n", fd);
-    character *c = (character*) malloc(CHARACTER_HEADER_SIZE + sizeof(size_t) + sizeof(int16_t) + sizeof(uint8_t) + sizeof(int16_t)); // add extra bytes for the non-lurk fields
+    character *c = (character*) malloc(CHARACTER_HEADER_SIZE + sizeof(size_t) + sizeof(int16_t) + sizeof(uint8_t) + sizeof(int16_t) + sizeof(time_t)); // add extra bytes for the non-lurk fields
     size_t readlen = recv(fd, &c->name, CHARACTER_HEADER_SIZE - 1, MSG_WAITALL);
     c->type = 10;
     c->initial_health = INITIAL_HEALTH;
@@ -14,6 +15,7 @@ character* receive_character(int fd) {
     c->description = (char*) malloc(c->desc_len + 1);
     c->description[c->desc_len] = 0; // null terminate the description
     c->npc = 0; // players are not NPCs
+    c->last_active_time = time(NULL);
     if (c->desc_len != 0)
         recv(fd, c->description, c->desc_len, MSG_WAITALL);
     //printf("Done!\n");
