@@ -27,6 +27,7 @@
 #include<cstdlib>
 #include<thread>
 #include<mutex>
+#include<condition_variable>
 #include<algorithm>
 #include<atomic>
 #include<chrono>
@@ -44,7 +45,10 @@ void handle_disconnect(character* c);
 void handle_pvp(character* player, character* npc);
 bool create_bots(uint16_t room_num);
 string get_time();
+void hourly_cleanup();
 void set_socklim(int sockfd);
+
+#define CHARACTER_TIMEOUT (60 * 60) // one hour
 
 const char* LURK_NAMES[] = {"Unused", "Message", "Changeroom", "Fight", "PVP Fight", "Loot", "Start", "Error", "Accept", "Room", "Character", "Game", "Leave", "Connection", "Version"};
 
@@ -64,6 +68,11 @@ map<thread::id, thread> threads;
 mutex thread_mutex; // lock when inserting / removing threads from the set
 
 atomic<bool> exit_thread {false}; // set an atomic bool to false that controls when threads handling clients should terminate
+
+thread hourly_cleanup_thread;
+condition_variable cv;
+mutex cv_mutex;
+int exit_cleanup_thread = 0;
 
 int main(int argc, char** argv) {
     struct sockaddr_in sad;
@@ -113,6 +122,9 @@ int main(int argc, char** argv) {
 	int client_fd;
 	struct sockaddr_in client_address;
 	socklen_t address_size = sizeof(struct sockaddr_in);
+
+    hourly_cleanup_thread = thread(hourly_cleanup); // start the cleanup thread
+    
 	for(;;){
 		client_fd = accept(skt, (struct sockaddr *)(&client_address), &address_size);
 		if(client_fd == -1){
@@ -581,7 +593,7 @@ void set_up_NPCs() {
     int num_NPCs = 0;
     
     for (rapidjson::Value::MemberIterator itr = doc.MemberBegin(); itr != doc.MemberEnd(); ++itr) {
-        character *tmp_char = (character*) malloc(CHARACTER_HEADER_SIZE + sizeof(size_t) + sizeof(int16_t) + sizeof(uint8_t) + sizeof(int16_t)); // create a character
+        character *tmp_char = (character*) malloc(CHARACTER_HEADER_SIZE + sizeof(size_t) + sizeof(int16_t) + sizeof(uint8_t) + sizeof(int16_t) + sizeof(time_t)); // create a character
         tmp_char->type = 10;
         strncpy(tmp_char->name, itr->name.GetString(), 32);
         tmp_char->attack = itr->value["attack"].GetInt();
@@ -593,6 +605,7 @@ void set_up_NPCs() {
         tmp_char->room_num = itr->value["room_num"].GetInt();
         tmp_char->desc_len = strlen(itr->value["description"].GetString()); // set the description length
         tmp_char->description = (char*) malloc(tmp_char->desc_len + 1); // malloc enough space for the description
+        tmp_char->last_active_time = time(NULL);
         strcpy(tmp_char->description, itr->value["description"].GetString()); // copy the description over
         tmp_char->fd = -1; // set the fd to -1 to ensure nothing is attempted to be sent to them
         if (itr->value["monster"].GetInt()) {
@@ -637,12 +650,13 @@ void handle_disconnect(character* c) {
     c->flags = (c->flags & (~READY)); // ensure the character is not ready
     c->flags = (c->flags & (~STARTED)); // ensure the character is not started
     c->fd = -1; // set the file descriptor to -1, which ensures nothing will be sent to it
+    c->last_active_time = time(NULL); // reset its inactive timer
     send_ch_to_all_in_room(c, &room_characters_map, c->room_num); // send an updated character to everyone in the room
     send_msg_to_all(&character_map, (string(c->name) + string(" has disconnected")).c_str());
 }
 
 void handle_pvp(character* player, character* npc) {
-    if (strcmp(npc->name, "Merlon") == 0) {
+    if (!strcmp(npc->name, "Merlon")) {
         if (player->gold < 100) {
             send_error(player->fd, 0, "Not enough gold to increase your stats! Merlon requires 100 gold.");
         } else { // increase the player's stats and decrease their gold, then send updated characters
@@ -661,7 +675,7 @@ void handle_pvp(character* player, character* npc) {
             send_narrator_msg(player->fd, player->name, "Your stats have been increased by 50 each!");
             printf("%s: \"%s\" has increased their stats by 50 each\n", get_time().c_str(), player->name);
         }
-    } else if (strcmp(npc->name, "Innkeeper") == 0) {
+    } else if (!strcmp(npc->name, "Innkeeper")) {
         if (player->health >= INITIAL_HEALTH) {
             send_error(player->fd, 0, "You are already at max health or above!");
             return;
@@ -679,7 +693,7 @@ void handle_pvp(character* player, character* npc) {
         send_ch_to_all_in_room(npc, &room_characters_map, npc->room_num);
         send_narrator_msg(player->fd, player->name, "You have been fully healed!");
 
-    } else if (strcmp(npc->name, "Darkly") == 0) {
+    } else if (!strcmp(npc->name, "Darkly")) {
         if (allowed_in_twilight_town.find(string(player->name)) == allowed_in_twilight_town.end()) { // if the player is not already allowed into the Twilight Town Pipe
             allowed_in_twilight_town.insert(string(player->name)); // add them to the set
             send_narrator_msg(player->fd, player->name, "Darkly wrote your name on your clothes! The Twilight Town Pipe will no longer reject you.");
@@ -699,8 +713,8 @@ void free_character(struct character* c) {
 void close_server(int signal_number) {
 
     printf("\n%s: Closing down the server\n\n", get_time().c_str());
-    printf("%s: Waiting for threads to finish...\n", get_time().c_str());
-    printf("%s: Number of threads in the threads set: %d\n", get_time().c_str(), threads.size());
+    printf("%s: Waiting for client threads to finish...\n", get_time().c_str());
+    printf("%s: Number of threads in the threads map: %d\n", get_time().c_str(), threads.size());
     exit_thread = true; // set exit_thread to true so the threads handling clients will terminate
     thread_mutex.lock();
     for (auto& t : threads) { // for each thread
@@ -708,8 +722,18 @@ void close_server(int signal_number) {
     }
     thread_mutex.unlock();
 
+    printf("\n%s: Notifying hourly cleanup thread of server close...\n", get_time().c_str());
+    {
+        lock_guard<mutex> lg(cv_mutex);
+        exit_cleanup_thread = 1;
+    }
+    printf("%s: Waiting for hourly cleanup thread to finish...\n", get_time().c_str());
+    cv.notify_all();
+    hourly_cleanup_thread.join();
+    printf("%s: Done!\n", get_time().c_str());
+
     close(skt); // close the socket 
-    printf("\n\n%s: Freeing rooms...\n", get_time().c_str());
+    printf("\n%s: Freeing rooms...\n", get_time().c_str());
     for (auto r : room_map) { // free each room
         free(r.second.description);
     }
@@ -719,7 +743,7 @@ void close_server(int signal_number) {
     for (auto& c : character_map) { // free each character
         free_character(c.second);
     }
-    printf("%s: Finished!\n\n", get_time().c_str());
+    printf("\n\n%s: Finished!\n\n", get_time().c_str());
     
     exit(EXIT_SUCCESS); // exit
 }
@@ -742,7 +766,7 @@ bool create_bots(uint16_t room_num) {
     if (name_list.empty()) { // populate the list
         string tmp;
         ifstream name_file {"/usr/bin/only_names"};
-        while (name_file >> tmp) {
+        while (name_file >> tmp) { 
             for (int i = 1; i < tmp.length(); i++)
                 tmp[i] = tolower(tmp[i]);
             name_list.push_back(tmp);
@@ -756,7 +780,7 @@ bool create_bots(uint16_t room_num) {
         while (!used_names.insert(rand_name).second) { // while the insertion was unsuccessful (name already used)
             rand_name = name_list[name_distrib(gen)]; // try another name
         }
-        character* bot = (character*) malloc(CHARACTER_HEADER_SIZE + sizeof(size_t) + sizeof(int16_t) + sizeof(uint8_t) + sizeof(int16_t)); // create a character
+        character* bot = (character*) malloc(CHARACTER_HEADER_SIZE + sizeof(size_t) + sizeof(int16_t) + sizeof(uint8_t) + sizeof(int16_t) + sizeof(time_t)); // create a character
         bot->type = 10;
         strncpy(bot->name, rand_name.c_str(), 32);
         bot->attack = INITIAL_STATS / 2;
@@ -770,6 +794,7 @@ bool create_bots(uint16_t room_num) {
         bot->desc_len = 4; // set the description length
         bot->description = (char*) malloc(4); // malloc enough space for the description
         strncpy(bot->description, "Bot", 4);
+        bot->last_active_time = time(NULL);
         bot->fd = -1; // set the fd to -1 to ensure nothing is attempted to be sent to them
         bot->npc = 0;
         character_mutex.lock();
@@ -786,6 +811,52 @@ string get_time() {
     time_t curr_time = time(NULL);
     tm* local_tm = localtime(&curr_time);
     return to_string(local_tm->tm_mon + 1) + string("/") + to_string(local_tm->tm_mday) + string("/") + to_string(local_tm->tm_year + 1900)+ string(" at ") + to_string(local_tm->tm_hour) + string(":") + to_string(local_tm->tm_min) + string(":") + to_string(local_tm->tm_sec);
+}
+
+void hourly_cleanup() {
+    vector<character*> players_to_kick;
+    unique_lock<mutex> lock(cv_mutex);
+    while (1) {
+        // wait for 10 minutes or until exit_cleanup_thread gets changed
+        if (!cv.wait_for(lock, 10min, []{return exit_cleanup_thread;})) {
+            time_t curr_time = time(NULL);
+            printf("%s: Beginning regular server cleanup routine...\n", get_time().c_str());
+            character_mutex.lock();
+            for (auto c : character_map) {
+                if (c.second->npc) continue; // skip checking NPCs
+                if ((c.second->flags & MONSTER) && !(c.second->flags & ALIVE)) { // if the character is a dead monster
+                    if (difftime(curr_time, c.second->last_active_time) >= CHARACTER_TIMEOUT) {
+                        c.second->health = c.second->initial_health; // reset the monster's health
+                        c.second->flags |= ALIVE; // mark it as alive
+                        send_ch_to_all_in_room(c.second, &room_characters_map, c.second->room_num);
+                        send_msg_to_all(&character_map, (string(c.second->name) + string(" in room ") + to_string(c.second->room_num) + string(" has been revived after being dead for over an hour!")).c_str());
+                        printf("%s: Monster \"%s\" in room %u has been revived after being dead for over an hour\n", get_time().c_str(), c.second->name, c.second->room_num);
+                    }
+                } else if (!(c.second->flags & MONSTER) && c.second->fd == -1 ) { // if the character is an inactive player
+                    if (difftime(curr_time, c.second->last_active_time) >= CHARACTER_TIMEOUT) {
+                        uint16_t original_room = c.second->room_num;
+                        c.second->room_num = 65535; // modify the character to be in an invalid room, then send it to clients
+                        send_ch_to_all_in_room(c.second, &room_characters_map, original_room);
+                        c.second->room_num = original_room; // restore the original room for proper removal
+                        send_msg_to_all(&character_map, (string(c.second->name) + string(" in room ") + to_string(original_room) + string(" has been kicked for inactivity")).c_str());
+                        printf("%s: \"%s\" in room %u has been kicked for inactivity\n", get_time().c_str(), c.second->name, original_room);
+                        players_to_kick.push_back(c.second);
+                    }
+                }
+            }
+            for (auto s : players_to_kick) {
+                character_map.erase(s->name);
+                auto it = find(room_characters_map.at(s->room_num).begin(), room_characters_map.at(s->room_num).end(), s);
+                room_characters_map.at(s->room_num).erase(it);
+                free_character(s);
+            }
+            players_to_kick.clear();
+            character_mutex.unlock();
+            printf("%s: Complete\n", get_time().c_str());
+        } else {
+            return;
+        }
+    }
 }
 
 void set_socklim(int sockfd){
